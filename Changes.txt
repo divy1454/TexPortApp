@@ -3,6 +3,7 @@
  - Replace GST screen to Home Screen
  - Remove Header from all screen except Home Screen
  - Remove Voice Order (Add in Feature Update)
+ - Add User Profile Screen
  - Home Screen :
     - Total Parties
     - Total Receviable Payment
