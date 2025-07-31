@@ -33,12 +33,19 @@ const AddPartyScreen = ({ navigation }) => {
       newErrors.location = 'Location is required';
     }
     
-    if (formData.phoneNumber && !/^\d{10}$/.test(formData.phoneNumber)) {
+    if (!formData.phoneNumber.trim()) {
+      newErrors.phoneNumber = 'Phone number is required';
+    } else if (formData.phoneNumber && !/^\d{10}$/.test(formData.phoneNumber)) {
       newErrors.phoneNumber = 'Phone number must be 10 digits';
     }
-    
-    if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) {
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Invalid email format';
+    }
+
+    if (!formData.address.trim()) {
+      newErrors.address = 'Address is required';
     }
 
     setErrors(newErrors);
@@ -73,7 +80,7 @@ const AddPartyScreen = ({ navigation }) => {
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Icon name="close" size={24} color="#1F2937" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>➕ Add New Party</Text>
+        <Text style={styles.headerTitle}>Add New Party</Text>
         <View style={styles.placeholder} />
       </View>
 
@@ -84,7 +91,7 @@ const AddPartyScreen = ({ navigation }) => {
         </View>
 
         <View style={styles.formGroup}>
-          <Text style={styles.formLabel}>Party Name *</Text>
+          <Text style={styles.formLabel}>Party Name <Text style={styles.required}>*</Text></Text>
           <TextInput
             style={[styles.formInput, errors.partyName && styles.formInputError]}
             placeholder="Enter party name"
@@ -96,7 +103,7 @@ const AddPartyScreen = ({ navigation }) => {
         </View>
 
         <View style={styles.formGroup}>
-          <Text style={styles.formLabel}>GST Number *</Text>
+          <Text style={styles.formLabel}>GST Number <Text style={styles.required}>*</Text></Text>
           <TextInput
             style={[styles.formInput, errors.gstNumber && styles.formInputError]}
             placeholder="24ABCDE1234F1Z5"
@@ -109,7 +116,7 @@ const AddPartyScreen = ({ navigation }) => {
         </View>
 
         <View style={styles.formGroup}>
-          <Text style={styles.formLabel}>Location *</Text>
+          <Text style={styles.formLabel}>Location <Text style={styles.required}>*</Text></Text>
           <TextInput
             style={[styles.formInput, errors.location && styles.formInputError]}
             placeholder="City, State"
@@ -121,18 +128,7 @@ const AddPartyScreen = ({ navigation }) => {
         </View>
 
         <View style={styles.formGroup}>
-          <Text style={styles.formLabel}>Contact Person</Text>
-          <TextInput
-            style={styles.formInput}
-            placeholder="Enter contact person name"
-            placeholderTextColor="#9CA3AF"
-            value={formData.contactPerson}
-            onChangeText={(value) => updateFormData('contactPerson', value)}
-          />
-        </View>
-
-        <View style={styles.formGroup}>
-          <Text style={styles.formLabel}>Phone Number</Text>
+          <Text style={styles.formLabel}>Phone Number <Text style={styles.required}>*</Text></Text>
           <TextInput
             style={[styles.formInput, errors.phoneNumber && styles.formInputError]}
             placeholder="Enter 10-digit phone number"
@@ -146,7 +142,7 @@ const AddPartyScreen = ({ navigation }) => {
         </View>
 
         <View style={styles.formGroup}>
-          <Text style={styles.formLabel}>Email</Text>
+          <Text style={styles.formLabel}>Email <Text style={styles.required}>*</Text></Text>
           <TextInput
             style={[styles.formInput, errors.email && styles.formInputError]}
             placeholder="Enter email address"
@@ -160,21 +156,9 @@ const AddPartyScreen = ({ navigation }) => {
         </View>
 
         <View style={styles.formGroup}>
-          <Text style={styles.formLabel}>Credit Limit</Text>
+          <Text style={styles.formLabel}>Address <Text style={styles.required}>*</Text></Text>
           <TextInput
-            style={styles.formInput}
-            placeholder="Enter credit limit amount"
-            placeholderTextColor="#9CA3AF"
-            value={formData.creditLimit}
-            onChangeText={(value) => updateFormData('creditLimit', value)}
-            keyboardType="numeric"
-          />
-        </View>
-
-        <View style={styles.formGroup}>
-          <Text style={styles.formLabel}>Address</Text>
-          <TextInput
-            style={[styles.formInput, styles.textArea]}
+            style={[styles.formInput, styles.textArea , errors.address && styles.formInputError]}
             placeholder="Enter complete address"
             placeholderTextColor="#9CA3AF"
             value={formData.address}
@@ -182,6 +166,7 @@ const AddPartyScreen = ({ navigation }) => {
             multiline={true}
             numberOfLines={3}
           />
+          {errors.address && <Text style={styles.errorText}>{errors.address}</Text>}
         </View>
       </ScrollView>
 
@@ -198,9 +183,13 @@ const AddPartyScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  required:{
+    color: '#EF4444',
+  },
   container: {
     flex: 1,
     backgroundColor: '#F3F4F6',
+    paddingTop: 0,
   },
   header: {
     flexDirection: 'row',
@@ -213,9 +202,11 @@ const styles = StyleSheet.create({
     borderBottomColor: '#E5E7EB',
   },
   backButton: {
+    marginTop: 25,
     padding: 8,
   },
   headerTitle: {
+    marginTop: 25,
     fontSize: 18,
     fontWeight: 'bold',
     color: '#1F2937',
@@ -278,6 +269,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   footer: {
+    marginTop: 10,
     flexDirection: 'row',
     gap: 12,
     padding: 16,

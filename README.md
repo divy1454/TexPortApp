@@ -39,7 +39,6 @@ TexPortApp/
 │   │   ├── HomeScreen.js
 │   │   ├── PaymentsScreen.js
 │   │   ├── PartiesScreen.js
-│   │   ├── GSTScreen.js
 │   │   ├── StaffScreen.js
 │   │   ├── MoreScreen.js
 │   │   └── modals/

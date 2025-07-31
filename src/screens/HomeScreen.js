@@ -5,181 +5,209 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import Header from '../../components/Header';
 
 const HomeScreen = ({ navigation }) => {
-  const quickStats = [
-    { label: 'Today\'s Sales', value: '₹2,45,000', color: '#10B981', icon: '💰' },
-    { label: 'Pending Bills', value: '12', color: '#F59E0B', icon: '📋' },
-    { label: 'Active Parties', value: '28', color: '#6366F1', icon: '🏢' },
-    { label: 'Staff Present', value: '15/18', color: '#8B5CF6', icon: '👥' }
-  ];
-
-  const quickActions = [
+  // Sample data for parties with payment details
+  const partiesReceivablePayments = [
     { 
-      title: 'Voice Commands', 
-      subtitle: 'Speak to manage your business', 
-      icon: '🎤', 
-      colors: ['#EF4444', '#F97316'],
-      onPress: () => navigation.navigate('VoiceModal')
+      id: 1, 
+      name: 'Rajesh Cotton Mills', 
+      amount: '₹2,45,000', 
+      dueDate: '2 days', 
+      status: 'overdue' 
     },
     { 
-      title: 'AI Predictions', 
-      subtitle: 'Market insights & trends', 
-      icon: '🤖', 
-      colors: ['#10B981', '#059669'],
-      onPress: () => navigation.navigate('AIPredictionsModal')
+      id: 2, 
+      name: 'Mumbai Silk House', 
+      amount: '₹78,500', 
+      dueDate: '5 days', 
+      status: 'due' 
     },
     { 
-      title: 'Due Payments', 
-      subtitle: 'Manage overdue bills', 
-      icon: '⚠️', 
-      colors: ['#F59E0B', '#EF4444'],
-      onPress: () => navigation.navigate('DuePaymentsModal')
+      id: 3, 
+      name: 'Delhi Fashion Hub', 
+      amount: '₹1,56,000', 
+      dueDate: '1 week', 
+      status: 'upcoming' 
     },
     { 
-      title: 'Add New Party', 
-      subtitle: 'Register new customer', 
-      icon: '➕', 
-      colors: ['#6366F1', '#8B5CF6'],
-      onPress: () => navigation.navigate('AddPartyModal')
+      id: 4, 
+      name: 'Chennai Textiles', 
+      amount: '₹89,200', 
+      dueDate: '3 days', 
+      status: 'overdue' 
+    },
+    { 
+      id: 5, 
+      name: 'Bangalore Weavers', 
+      amount: '₹67,800', 
+      dueDate: '1 day', 
+      status: 'urgent' 
     }
   ];
 
-  const recentActivities = [
-    {
-      id: 1,
-      type: 'payment',
-      title: 'Payment Received',
-      subtitle: 'Mumbai Silk House - ₹78,500',
-      time: '2 hours ago',
-      icon: '💰',
-      color: '#10B981'
+  const partiesGivablePayments = [
+    { 
+      id: 1, 
+      name: 'Gujarat Yarn Suppliers', 
+      amount: '₹1,23,000', 
+      dueDate: '4 days', 
+      status: 'upcoming' 
     },
-    {
-      id: 2,
-      type: 'order',
-      title: 'New Order',
-      subtitle: 'Delhi Fashion Hub - 500m Cotton',
-      time: '4 hours ago',
-      icon: '📦',
-      color: '#6366F1'
+    { 
+      id: 2, 
+      name: 'Ahmedabad Cotton Co.', 
+      amount: '₹95,600', 
+      dueDate: '2 days', 
+      status: 'due' 
     },
-    {
-      id: 3,
-      type: 'gst',
-      title: 'GST Filing Due',
-      subtitle: 'Monthly return due in 3 days',
-      time: '6 hours ago',
-      icon: '📄',
-      color: '#F59E0B'
+    { 
+      id: 3, 
+      name: 'Punjab Thread Mills', 
+      amount: '₹2,15,400', 
+      dueDate: '6 days', 
+      status: 'upcoming' 
     },
-    {
-      id: 4,
-      type: 'staff',
-      title: 'Staff Attendance',
-      subtitle: '15 out of 18 staff present today',
-      time: '8 hours ago',
-      icon: '👥',
-      color: '#8B5CF6'
+    { 
+      id: 4, 
+      name: 'Haryana Dye Works', 
+      amount: '₹76,300', 
+      dueDate: '1 day', 
+      status: 'urgent' 
+    },
+    { 
+      id: 5, 
+      name: 'Rajasthan Fabrics', 
+      amount: '₹1,45,900', 
+      dueDate: '5 days', 
+      status: 'upcoming' 
     }
   ];
 
-  const handleQuickStatPress = (stat) => {
-    switch (stat.label) {
-      case 'Today\'s Sales':
-        navigation.navigate('Payments');
-        break;
-      case 'Pending Bills':
-        navigation.navigate('DuePaymentsModal');
-        break;
-      case 'Active Parties':
-        navigation.navigate('Parties');
-        break;
-      case 'Staff Present':
-        navigation.navigate('Staff');
-        break;
-      default:
-        break;
+  // Calculate totals
+  const totalReceivable = partiesReceivablePayments.reduce((sum, party) => {
+    const amount = parseInt(party.amount.replace(/[₹,]/g, ''));
+    return sum + amount;
+  }, 0);
+
+  const totalGivable = partiesGivablePayments.reduce((sum, party) => {
+    const amount = parseInt(party.amount.replace(/[₹,]/g, ''));
+    return sum + amount;
+  }, 0);
+
+  const totalParties = [...partiesReceivablePayments, ...partiesGivablePayments].length;
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'overdue': 
+      case 'urgent': 
+        return '#EF4444';
+      case 'due': 
+        return '#F59E0B';
+      default: 
+        return '#10B981';
     }
   };
 
+  const handlePartyPress = (party) => {
+    Alert.alert(
+      party.name,
+      `Amount: ${party.amount}\nDue: ${party.dueDate}\nStatus: ${party.status}`,
+      [{ text: 'OK' }]
+    );
+  };
+
+  const renderPartyTable = (title, parties, icon) => (
+    <View style={styles.tableContainer}>
+      <View style={styles.tableHeader}>
+        <Text style={styles.tableTitle}>{icon} {title}</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('Parties')}>
+          <Text style={styles.viewAllText}>View All</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.table}>
+        <View style={styles.tableHeaderRow}>
+          <Text style={styles.tableHeaderText}>Party Name</Text>
+          <Text style={styles.tableHeaderText}>Amount</Text>
+          <Text style={styles.tableHeaderText}>Due</Text>
+          <Text style={styles.tableHeaderText}>Action</Text>
+        </View>
+        {parties.slice(0, 5).map((party, index) => (
+          <View key={party.id} style={[styles.tableRow, index % 2 === 0 && styles.evenRow]}>
+            <Text style={styles.partyName} numberOfLines={1}>{party.name}</Text>
+            <Text style={[styles.amount, { color: getStatusColor(party.status) }]}>
+              {party.amount}
+            </Text>
+            <Text style={styles.dueDate}>{party.dueDate}</Text>
+            <TouchableOpacity 
+              style={styles.showButton}
+              onPress={() => handlePartyPress(party)}
+            >
+              <Icon name="visibility" size={18} color="#6366F1" />
+            </TouchableOpacity>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+
   return (
     <SafeAreaView style={styles.container}>
-      <Header 
-        title="🏠 Business Dashboard" 
-        showNotification={true}
-        onNotificationPress={() => Alert.alert('Notifications', 'You have 3 new notifications')}
-      />
-      
+      <Header navigation={navigation} />
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Welcome Section */}
         <LinearGradient colors={['#6366F1', '#8B5CF6']} style={styles.welcomeCard}>
           <View style={styles.welcomeContent}>
-            <Text style={styles.welcomeTitle}>Welcome back! 👋</Text>
-            <Text style={styles.welcomeSubtitle}>Here's what's happening with your textile business today</Text>
+            <Text style={styles.welcomeTitle}>Welcome to TexPort! 🏠</Text>
+            <Text style={styles.welcomeSubtitle}>Your complete textile business dashboard</Text>
           </View>
           <Text style={styles.welcomeIcon}>🏭</Text>
         </LinearGradient>
 
-        {/* Quick Stats */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>📊 Quick Overview</Text>
+        {/* Summary Stats */}
+        <View style={styles.summaryContainer}>
+          <View style={styles.summaryCard}>
+            <Text style={styles.summaryValue}>{totalParties}</Text>
+            <Text style={styles.summaryLabel}>Total Parties</Text>
+            <Icon name="people" size={24} color="#6366F1" />
+          </View>
+          <View style={styles.summaryCard}>
+            <Text style={styles.summaryValue}>₹{(totalReceivable / 100000).toFixed(1)}L</Text>
+            <Text style={styles.summaryLabel}>Receivable</Text>
+            <Icon name="trending-up" size={24} color="#10B981" />
+          </View>
+          <View style={styles.summaryCard}>
+            <Text style={styles.summaryValue}>₹{(totalGivable / 100000).toFixed(1)}L</Text>
+            <Text style={styles.summaryLabel}>Payable</Text>
+            <Icon name="trending-down" size={24} color="#EF4444" />
+          </View>
         </View>
-        <View style={styles.statsGrid}>
-          {quickStats.map((stat, index) => (
-            <TouchableOpacity 
-              key={index} 
-              style={styles.statCard}
-              onPress={() => handleQuickStatPress(stat)}
-            >
-              <Text style={styles.statIcon}>{stat.icon}</Text>
-              <Text style={styles.statValue}>{stat.value}</Text>
-              <Text style={styles.statLabel}>{stat.label}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+
+        {/* Payment Tables */}
+        {renderPartyTable('Parties to Receive Payment From', partiesReceivablePayments, '💰')}
+        {renderPartyTable('Parties to Give Payment To', partiesGivablePayments, '💸')}
 
         {/* Quick Actions */}
-        <View style={styles.sectionHeader}>
+        <View style={styles.quickActionsContainer}>
           <Text style={styles.sectionTitle}>⚡ Quick Actions</Text>
-        </View>
-        <View style={styles.actionsGrid}>
-          {quickActions.map((action, index) => (
+          <View style={styles.actionsGrid}>
             <TouchableOpacity 
-              key={index} 
               style={styles.actionCard}
-              onPress={action.onPress}
+              onPress={() => navigation.navigate('Parties')}
             >
-              <LinearGradient colors={action.colors} style={styles.actionGradient}>
-                <Text style={styles.actionIcon}>{action.icon}</Text>
-                <Text style={styles.actionTitle}>{action.title}</Text>
-                <Text style={styles.actionSubtitle}>{action.subtitle}</Text>
+              <LinearGradient colors={['#10B981', '#059669']} style={styles.actionGradient}>
+                <Icon name="people" size={32} color="white" />
+                <Text style={styles.actionTitle}>All Parties</Text>
               </LinearGradient>
             </TouchableOpacity>
-          ))}
-        </View>
-
-        {/* Recent Activities */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>🕐 Recent Activities</Text>
-          <TouchableOpacity>
-            <Text style={styles.seeAllText}>See All</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.activitiesList}>
-          {recentActivities.map((activity) => (
-            <View key={activity.id} style={styles.activityItem}>
-              <View style={[styles.activityIcon, { backgroundColor: activity.color + '20' }]}>
-                <Text style={styles.activityIconText}>{activity.icon}</Text>
-              </View>
-              <View style={styles.activityContent}>
-                <Text style={styles.activityTitle}>{activity.title}</Text>
-                <Text style={styles.activitySubtitle}>{activity.subtitle}</Text>
-                <Text style={styles.activityTime}>{activity.time}</Text>
-              </View>
-              <TouchableOpacity style={styles.activityArrow}>
-                <Icon name="arrow-forward-ios" size={16} color="#9CA3AF" />
-              </TouchableOpacity>
-            </View>
-          ))}
+            <TouchableOpacity 
+              style={styles.actionCard}
+              onPress={() => navigation.navigate('Payments')}
+            >
+              <LinearGradient colors={['#6366F1', '#8B5CF6']} style={styles.actionGradient}>
+                <Icon name="payment" size={32} color="white" />
+                <Text style={styles.actionTitle}>Payments</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Bottom Spacing */}
@@ -193,10 +221,23 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F3F4F6',
+    paddingTop: 0,
   },
   content: {
     flex: 1,
     paddingHorizontal: 16,
+  },
+  screenHeader: {
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    backgroundColor: 'white',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E7EB',
+  },
+  screenTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#1F2937',
   },
   welcomeCard: {
     borderRadius: 20,
@@ -224,62 +265,128 @@ const styles = StyleSheet.create({
     fontSize: 48,
     marginLeft: 16,
   },
-  sectionHeader: {
+  summaryContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 24,
-    marginBottom: 16,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#1F2937',
-  },
-  seeAllText: {
-    color: '#6366F1',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  statsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
     gap: 12,
+    marginBottom: 24,
   },
-  statCard: {
+  summaryCard: {
+    flex: 1,
     backgroundColor: 'white',
     borderRadius: 16,
-    padding: 20,
+    padding: 16,
     alignItems: 'center',
-    width: '48%',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
   },
-  statIcon: {
-    fontSize: 32,
-    marginBottom: 8,
-  },
-  statValue: {
-    fontSize: 24,
+  summaryValue: {
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#1F2937',
     marginBottom: 4,
   },
-  statLabel: {
+  summaryLabel: {
+    fontSize: 12,
+    color: '#6B7280',
+    marginBottom: 8,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#1F2937',
+    marginBottom: 16,
+  },
+  tableContainer: {
+    backgroundColor: 'white',
+    borderRadius: 16,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  tableHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
+  },
+  tableTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#1F2937',
+  },
+  viewAllText: {
+    color: '#6366F1',
     fontSize: 14,
+    fontWeight: '600',
+  },
+  table: {
+    padding: 16,
+  },
+  tableHeaderRow: {
+    flexDirection: 'row',
+    paddingVertical: 8,
+    borderBottomWidth: 2,
+    borderBottomColor: '#E5E7EB',
+    marginBottom: 8,
+  },
+  tableHeaderText: {
+    flex: 1,
+    fontSize: 14,
+    fontWeight: 'bold',
     color: '#6B7280',
     textAlign: 'center',
   },
+  tableRow: {
+    flexDirection: 'row',
+    paddingVertical: 12,
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
+  },
+  evenRow: {
+    backgroundColor: '#F9FAFB',
+  },
+  partyName: {
+    flex: 1,
+    fontSize: 14,
+    color: '#1F2937',
+    fontWeight: '500',
+  },
+  amount: {
+    flex: 1,
+    fontSize: 14,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  dueDate: {
+    flex: 1,
+    fontSize: 12,
+    color: '#6B7280',
+    textAlign: 'center',
+  },
+  showButton: {
+    flex: 1,
+    alignItems: 'center',
+    padding: 4,
+  },
+  quickActionsContainer: {
+    marginTop: 8,
+    marginBottom: 16,
+  },
   actionsGrid: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
     gap: 12,
   },
   actionCard: {
-    width: '48%',
+    flex: 1,
     borderRadius: 16,
     overflow: 'hidden',
     shadowColor: '#000',
@@ -291,74 +398,15 @@ const styles = StyleSheet.create({
   actionGradient: {
     padding: 20,
     alignItems: 'center',
-    minHeight: 120,
+    minHeight: 100,
     justifyContent: 'center',
-  },
-  actionIcon: {
-    fontSize: 32,
-    marginBottom: 8,
   },
   actionTitle: {
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 4,
+    marginTop: 8,
     textAlign: 'center',
-  },
-  actionSubtitle: {
-    color: 'rgba(255, 255, 255, 0.9)',
-    fontSize: 12,
-    textAlign: 'center',
-    lineHeight: 16,
-  },
-  activitiesList: {
-    backgroundColor: 'white',
-    borderRadius: 16,
-    padding: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  activityItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
-  },
-  activityIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 16,
-  },
-  activityIconText: {
-    fontSize: 20,
-  },
-  activityContent: {
-    flex: 1,
-  },
-  activityTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#1F2937',
-    marginBottom: 2,
-  },
-  activitySubtitle: {
-    fontSize: 14,
-    color: '#6B7280',
-    marginBottom: 2,
-  },
-  activityTime: {
-    fontSize: 12,
-    color: '#9CA3AF',
-  },
-  activityArrow: {
-    padding: 8,
   },
   bottomSpacing: {
     height: 100,

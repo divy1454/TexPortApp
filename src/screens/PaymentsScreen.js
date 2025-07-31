@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, ScrollView, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import Header from '../../components/Header';
 import TransactionCard from '../../components/TransactionCard';
+import Header from '../../components/Header';
 
 const PaymentsScreen = ({ navigation }) => {
   const transactions = [
@@ -39,7 +39,6 @@ const PaymentsScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <Header navigation={navigation} />
-      
       <ScrollView style={styles.content}>
         {/* Due Payment Alert */}
         <LinearGradient
@@ -81,19 +80,6 @@ const PaymentsScreen = ({ navigation }) => {
           />
         ))}
       </ScrollView>
-
-      {/* Floating Voice Button */}
-      <TouchableOpacity 
-        style={styles.floatingVoiceButton} 
-        onPress={() => navigation.navigate('VoiceCommand')}
-      >
-        <LinearGradient
-          colors={['#EF4444', '#EC4899']}
-          style={styles.floatingVoiceGradient}
-        >
-          <Text style={styles.micIcon}>🎤</Text>
-        </LinearGradient>
-      </TouchableOpacity>
     </SafeAreaView>
   );
 };
@@ -102,11 +88,24 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F3F4F6',
+    paddingTop: 0,
   },
   content: {
     flex: 1,
     padding: 16,
     paddingBottom: 100,
+  },
+  screenHeader: {
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    backgroundColor: 'white',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E7EB',
+  },
+  screenTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#1F2937',
   },
   alertCard: {
     borderRadius: 16,

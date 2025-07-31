@@ -22,6 +22,16 @@ const AttendanceScreen = ({ navigation, route }) => {
     }));
   };
 
+  const markAllAttendance = (status) => {
+    setAttendance(prev => {
+      const newAttendance = {};
+      staff.forEach(worker => {
+        newAttendance[worker.id] = status;
+      });
+      return newAttendance;
+    });
+  };
+
   const saveAllAttendance = () => {
     const presentCount = Object.values(attendance).filter(status => status === 'present').length;
     const absentCount = Object.values(attendance).filter(status => status === 'absent').length;
@@ -83,7 +93,25 @@ const AttendanceScreen = ({ navigation, route }) => {
       </View>
 
       <ScrollView style={styles.content}>
-        <Text style={styles.sectionTitle}>Staff List</Text>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Staff List</Text>
+          <View style={styles.selectAllContainer}>
+            <TouchableOpacity 
+              style={styles.selectAllButton}
+              onPress={() => markAllAttendance('present')}
+            >
+              <Icon name="check-circle" size={16} color="#10B981" />
+              <Text style={styles.selectAllText}>All Present</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={styles.selectAllButton}
+              onPress={() => markAllAttendance('absent')}
+            >
+              <Icon name="cancel" size={16} color="#EF4444" />
+              <Text style={styles.selectAllText}>All Absent</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
         
         {staff.map((worker) => (
           <View key={worker.id} style={styles.attendanceItem}>
@@ -143,7 +171,7 @@ const AttendanceScreen = ({ navigation, route }) => {
       <View style={styles.footer}>
         <TouchableOpacity style={styles.saveAttendanceButton} onPress={saveAllAttendance}>
           <Icon name="save" size={20} color="white" style={styles.saveIcon} />
-          <Text style={styles.saveAttendanceButtonText}>💾 Save All Attendance</Text>
+          <Text style={styles.saveAttendanceButtonText}>Save All Attendance</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -154,6 +182,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F3F4F6',
+    paddingTop: 0,
   },
   header: {
     flexDirection: 'row',
@@ -166,9 +195,11 @@ const styles = StyleSheet.create({
     borderBottomColor: '#E5E7EB',
   },
   backButton: {
+    marginTop: 25,
     padding: 8,
   },
   headerTitle: {
+    marginTop: 25,
     fontSize: 18,
     fontWeight: 'bold',
     color: '#1F2937',
@@ -234,6 +265,35 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#1F2937',
     marginBottom: 16,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  selectAllContainer: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  selectAllButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+    gap: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  selectAllText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#374151',
   },
   attendanceItem: {
     flexDirection: 'row',

@@ -9,12 +9,12 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import HomeScreen from './src/screens/HomeScreen';
 import PaymentsScreen from './src/screens/PaymentsScreen';
 import PartiesScreen from './src/screens/PartiesScreen';
-import GSTScreen from './src/screens/GSTScreen';
 import StaffScreen from './src/screens/StaffScreen';
 import MoreScreen from './src/screens/MoreScreen';
+import ProfileScreen from './src/screens/ProfileScreen';
 
 // Modal screens
-import VoiceCommandScreen from './src/screens/modals/VoiceCommandScreen';
+// import VoiceCommandScreen from './src/screens/modals/VoiceCommandScreen';
 import AIPredictionsScreen from './src/screens/modals/AIPredictionsScreen';
 import DuePaymentsScreen from './src/screens/modals/DuePaymentsScreen';
 import AddPartyScreen from './src/screens/modals/AddPartyScreen';
@@ -31,14 +31,14 @@ const TabNavigator = () => (
       tabBarIcon: ({ focused, color, size }) => {
         let iconName;
         switch (route.name) {
+          case 'Home':
+            iconName = 'home';
+            break;
           case 'Payments':
             iconName = 'payment';
             break;
           case 'Parties':
             iconName = 'people';
-            break;
-          case 'GST':
-            iconName = 'description';
             break;
           case 'Staff':
             iconName = 'person';
@@ -56,9 +56,9 @@ const TabNavigator = () => (
       headerShown: false,
     })}
   >
+    <Tab.Screen name="Home" component={HomeScreen} />
     <Tab.Screen name="Payments" component={PaymentsScreen} />
     <Tab.Screen name="Parties" component={PartiesScreen} />
-    <Tab.Screen name="GST" component={GSTScreen} />
     <Tab.Screen name="Staff" component={StaffScreen} />
     <Tab.Screen name="More" component={MoreScreen} />
   </Tab.Navigator>
@@ -68,11 +68,11 @@ const App = () => (
   <NavigationContainer>
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Main" component={TabNavigator} />
-      <Stack.Screen 
+      {/* <Stack.Screen 
         name="VoiceCommand" 
         component={VoiceCommandScreen}
         options={{ presentation: 'modal' }}
-      />
+      /> */}
       <Stack.Screen 
         name="AIPredictions" 
         component={AIPredictionsScreen}
@@ -101,6 +101,11 @@ const App = () => (
       <Stack.Screen 
         name="Attendance" 
         component={AttendanceScreen}
+        options={{ presentation: 'modal' }}
+      />
+      <Stack.Screen 
+        name="Profile" 
+        component={ProfileScreen}
         options={{ presentation: 'modal' }}
       />
     </Stack.Navigator>
