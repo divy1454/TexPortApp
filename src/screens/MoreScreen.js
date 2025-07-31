@@ -41,7 +41,7 @@ const MoreScreen = ({ navigation }) => {
           </View>
         </View>
 
-        {/* AI Features */}
+        {/* AI Features
         <LinearGradient
           colors={['#8B5CF6', '#EC4899', '#EF4444']}
           style={styles.aiCard}
@@ -62,7 +62,7 @@ const MoreScreen = ({ navigation }) => {
             <Text style={styles.aiFeatureTitle}>Price Optimization</Text>
             <Text style={styles.aiFeatureSubtitle}>AI suggests optimal pricing for maximum profit</Text>
           </TouchableOpacity>
-        </LinearGradient>
+        </LinearGradient> */}
 
         {/* Quick Tools Grid */}
         <View style={styles.toolsGrid}>
