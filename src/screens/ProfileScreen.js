@@ -30,8 +30,11 @@ const ProfileScreen = ({ navigation }) => {
       [
         { text: 'Cancel', style: 'cancel' },
         { text: 'Logout', style: 'destructive', onPress: () => {
-          // Here you would handle the actual logout logic
-          Alert.alert('Logged Out', 'You have been logged out successfully!');
+          // Navigate to Welcome screen and reset stack
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'Welcome' }],
+          });
         }}
       ]
     );

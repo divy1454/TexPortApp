@@ -1,8 +1,8 @@
 // App.js - Main Navigation Setup
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 // Import all screens
@@ -21,6 +21,11 @@ import AddPartyScreen from './src/screens/modals/AddPartyScreen';
 import BillSortingScreen from './src/screens/modals/BillSortingScreen';
 import TransporterBookingScreen from './src/screens/modals/TransporterBookingScreen';
 import AttendanceScreen from './src/screens/modals/AttendanceScreen';
+
+//Auth Screens
+import WelcomeScreen from './src/screens/auth/WelcomeScreen';
+import LoginScreen from './src/screens/auth/LoginScreen';
+import RegisterScreen from './src/screens/auth/RegisterScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -64,15 +69,19 @@ const TabNavigator = () => (
   </Tab.Navigator>
 );
 
+
 const App = () => (
   <NavigationContainer>
     <Stack.Navigator screenOptions={{ headerShown: false }}>
+      {/* Auth Screens */}
+      <Stack.Screen name="Welcome" component={WelcomeScreen} />
+      <Stack.Screen name="Login" component={LoginScreen} />
+      <Stack.Screen name="Register" component={RegisterScreen} />
+
+      {/* Main App Tabs */}
       <Stack.Screen name="Main" component={TabNavigator} />
-      {/* <Stack.Screen 
-        name="VoiceCommand" 
-        component={VoiceCommandScreen}
-        options={{ presentation: 'modal' }}
-      /> */}
+
+      {/* Modals */}
       <Stack.Screen 
         name="AIPredictions" 
         component={AIPredictionsScreen}

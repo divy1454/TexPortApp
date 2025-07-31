@@ -41,29 +41,6 @@ const MoreScreen = ({ navigation }) => {
           </View>
         </View>
 
-        {/* AI Features
-        <LinearGradient
-          colors={['#8B5CF6', '#EC4899', '#EF4444']}
-          style={styles.aiCard}
-        >
-          <Text style={styles.aiCardTitle}>🤖 AI-Powered Features</Text>
-          <TouchableOpacity 
-            style={styles.aiFeatureButton} 
-            onPress={() => navigation.navigate('AIPredictions')}
-          >
-            <Text style={styles.aiFeatureTitle}>Fabric Demand Prediction</Text>
-            <Text style={styles.aiFeatureSubtitle}>Cotton demand ↗ 15% this month in your region</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.aiFeatureButton}>
-            <Text style={styles.aiFeatureTitle}>Regional Market Trends</Text>
-            <Text style={styles.aiFeatureSubtitle}>Silk trending in Mumbai • Polyester stable</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.aiFeatureButton}>
-            <Text style={styles.aiFeatureTitle}>Price Optimization</Text>
-            <Text style={styles.aiFeatureSubtitle}>AI suggests optimal pricing for maximum profit</Text>
-          </TouchableOpacity>
-        </LinearGradient> */}
-
         {/* Quick Tools Grid */}
         <View style={styles.toolsGrid}>
           <ToolCard 

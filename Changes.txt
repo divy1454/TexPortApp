@@ -10,3 +10,11 @@
     - Total Givable Payment
     - Old 5 Receviable Payment Parties details
     - Old 5 Givable Payment Parties details
+==============================
+31-07-2025 - Done by Divy
+   -Removed AI Features from More Screen
+   -Added LoginScreen,RegisterScreen,WelcomeScreen
+   -updated ProfileScreen ("When Logout is Pressed it redirect to the WelcomeScreen")
+   -Fixed Redirection Login,Register,Demo
+   -Removed Unnecessary Screens
+   -Removed Navigation File (No Need)
