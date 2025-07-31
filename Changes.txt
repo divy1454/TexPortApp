@@ -1,1 +1,11 @@
-
+31-07-2025 - Status
+========================
+ - Replace GST screen to Home Screen
+ - Remove Header from all screen except Home Screen
+ - Remove Voice Order (Add in Feature Update)
+ - Home Screen :
+    - Total Parties
+    - Total Receviable Payment
+    - Total Givable Payment
+    - Old 5 Receviable Payment Parties details
+    - Old 5 Givable Payment Parties details
