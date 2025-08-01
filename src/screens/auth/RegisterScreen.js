@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Alert, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const RegisterScreen = ({ navigation }) => {
   const [formData, setFormData] = useState({
@@ -73,22 +74,29 @@ const RegisterScreen = ({ navigation }) => {
 
   const handleRegister = async () => {
     if (validateForm()) {
+      // axios call to register the user
       setIsLoading(true);
-      
-      // Simulate API call
-      setTimeout(() => {
+      try {
+        const response = await fetch('http://10.131.152.6:8000/api/signup', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData),
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          Alert.alert('Success', 'Account created successfully!');
+          navigation.navigate('Login');
+        } else {
+          Alert.alert('Error', data.message || 'Something went wrong. Please try again.');
+        }
+      } catch (error) {
+        Alert.alert('Error', 'Network error. Please check your connection.');
+      } finally {
         setIsLoading(false);
-        Alert.alert(
-          'Registration Successful! 🎉',
-          `Welcome to TextilePro, ${formData.ownerName}! Your account has been created successfully.\n\nBusiness ID: TB-${Date.now().toString().slice(-6)}`,
-          [
-            {
-              text: 'Get Started',
-              onPress: () => navigation.replace('Main')
-            }
-          ]
-        );
-      }, 2000);
+      }
     }
   };
 
@@ -98,6 +106,17 @@ const RegisterScreen = ({ navigation }) => {
       setErrors(prev => ({ ...prev, [field]: null }));
     }
   };
+
+    // Check if user is already logged in
+  const checkLoginStatus = async () => {
+    const user = await AsyncStorage.getItem('user');
+    if (user) {
+      navigation.navigate('Main');
+    }
+  };
+  React.useEffect(() => {
+    checkLoginStatus();
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>

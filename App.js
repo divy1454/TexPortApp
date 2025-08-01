@@ -15,7 +15,7 @@ import ProfileScreen from './src/screens/ProfileScreen';
 
 // Modal screens
 // import VoiceCommandScreen from './src/screens/modals/VoiceCommandScreen';
-import AIPredictionsScreen from './src/screens/modals/AIPredictionsScreen';
+// import AIPredictionsScreen from './src/screens/modals/AIPredictionsScreen';
 import DuePaymentsScreen from './src/screens/modals/DuePaymentsScreen';
 import AddPartyScreen from './src/screens/modals/AddPartyScreen';
 import BillSortingScreen from './src/screens/modals/BillSortingScreen';
@@ -82,11 +82,11 @@ const App = () => (
       <Stack.Screen name="Main" component={TabNavigator} />
 
       {/* Modals */}
-      <Stack.Screen 
+      {/* <Stack.Screen 
         name="AIPredictions" 
         component={AIPredictionsScreen}
         options={{ presentation: 'modal' }}
-      />
+      /> */}
       <Stack.Screen 
         name="DuePayments" 
         component={DuePaymentsScreen}

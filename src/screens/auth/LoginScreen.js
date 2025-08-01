@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Alert, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginScreen = ({ navigation }) => {
   const [formData, setFormData] = useState({
@@ -33,22 +34,33 @@ const LoginScreen = ({ navigation }) => {
 
   const handleLogin = async () => {
     if (validateForm()) {
+      // axios request to login endpoint
       setIsLoading(true);
-      
-      // Simulate API call
-      setTimeout(() => {
+      try {
+        const response = await fetch('http://10.131.152.6:8000/api/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData),
+        });
+
+        const data = await response.json();
+        
+        if (response.ok) {          
+          Alert.alert('Login Successful', 'Welcome back!');
+          // Store user data in AsyncStorage
+          await AsyncStorage.setItem('user', JSON.stringify(data.user));
+          navigation.navigate('Main');
+        } else {          
+          Alert.alert('Login Failed', data.message || 'An error occurred. Please try again.');
+        }
+      } catch (error) {
+        console.log('Login error:', error);
+        Alert.alert('Network Error', 'Please check your internet connection and try again.');
+      } finally {
         setIsLoading(false);
-        Alert.alert(
-          'Login Successful! 🎉',
-          `Welcome back to your textile business dashboard!`,
-          [
-            {
-              text: 'Continue',
-              onPress: () => navigation.replace('Main')
-            }
-          ]
-        );
-      }, 1500);
+      }
     }
   };
 
@@ -59,6 +71,17 @@ const LoginScreen = ({ navigation }) => {
     }
   };
 
+  // Check if user is already logged in
+  const checkLoginStatus = async () => {
+    const user = await AsyncStorage.getItem('user');
+    if (user) {
+      navigation.navigate('Main');
+    }
+  };
+  React.useEffect(() => {
+    checkLoginStatus();
+  }, []);
+  
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView 

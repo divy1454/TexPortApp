@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width, height } = Dimensions.get('window');
 
@@ -21,6 +22,12 @@ const WelcomeScreen = ({ navigation }) => {
   const slideAnim = useRef(new Animated.Value(50)).current;
 
   useEffect(() => {
+    (async () => {
+      const user = await AsyncStorage.getItem('user');
+      if (user) {
+        navigation.replace('Main');
+      }
+    })();
     // Logo floating animation
     const floatAnimation = Animated.loop(
       Animated.sequence([
@@ -75,13 +82,6 @@ const WelcomeScreen = ({ navigation }) => {
       subtitle: 'Manage 1000+ customers effortlessly',
       color: '#6366F1',
       bgColor: 'rgba(99, 102, 241, 0.1)'
-    },
-    { 
-      icon: '📊', 
-      title: 'GST Autopilot', 
-      subtitle: 'Never miss a filing deadline again',
-      color: '#F59E0B',
-      bgColor: 'rgba(245, 158, 11, 0.1)'
     },
     { 
       icon: '👥', 
@@ -520,6 +520,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   testimonialsScroll: {
+    marginBottom: 10,
     paddingHorizontal: 10,
     gap: 16,
   },

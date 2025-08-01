@@ -1,7 +1,17 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet, SafeAreaView, TextInput, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+  SafeAreaView,
+  TextInput,
+  Alert,
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ProfileScreen = ({ navigation }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -12,32 +22,34 @@ const ProfileScreen = ({ navigation }) => {
     business: 'TexPort Digital Textile',
     gst: '24ABCDE1234F1Z5',
     address: '123 Textile Market, Ahmedabad, Gujarat 380001',
-    joinDate: 'January 2024'
+    joinDate: 'January 2024',
   });
 
   const handleSave = () => {
     Alert.alert(
       'Profile Updated',
       'Your profile has been updated successfully!',
-      [{ text: 'OK', onPress: () => setIsEditing(false) }]
+      [{ text: 'OK', onPress: () => setIsEditing(false) }],
     );
   };
 
   const handleLogout = () => {
-    Alert.alert(
-      'Logout',
-      'Are you sure you want to logout?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Logout', style: 'destructive', onPress: () => {
+    Alert.alert('Logout', 'Are you sure you want to logout?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Logout',
+        style: 'destructive',
+        onPress: async () => {
+          // Clear user data from AsyncStorage
+          await AsyncStorage.removeItem('user');
           // Navigate to Welcome screen and reset stack
           navigation.reset({
             index: 0,
             routes: [{ name: 'Welcome' }],
           });
-        }}
-      ]
-    );
+        },
+      },
+    ]);
   };
 
   const renderField = (label, value, key, icon) => (
@@ -50,7 +62,9 @@ const ProfileScreen = ({ navigation }) => {
         <TextInput
           style={styles.fieldInput}
           value={profileData[key]}
-          onChangeText={(text) => setProfileData(prev => ({ ...prev, [key]: text }))}
+          onChangeText={text =>
+            setProfileData(prev => ({ ...prev, [key]: text }))
+          }
           multiline={key === 'address'}
         />
       ) : (
@@ -63,7 +77,10 @@ const ProfileScreen = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
           <Icon name="arrow-back" size={24} color="#1F2937" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Profile</Text>
@@ -71,14 +88,19 @@ const ProfileScreen = ({ navigation }) => {
           onPress={isEditing ? handleSave : () => setIsEditing(true)}
           style={styles.editButton}
         >
-          <Icon name={isEditing ? "save" : "edit"} size={20} color="#6366F1" />
-          <Text style={styles.editButtonText}>{isEditing ? "Save" : "Edit"}</Text>
+          <Icon name={isEditing ? 'save' : 'edit'} size={20} color="#6366F1" />
+          <Text style={styles.editButtonText}>
+            {isEditing ? 'Save' : 'Edit'}
+          </Text>
         </TouchableOpacity>
       </View>
 
       <ScrollView style={styles.content}>
         {/* Profile Avatar Section */}
-        <LinearGradient colors={['#6366F1', '#8B5CF6']} style={styles.avatarSection}>
+        <LinearGradient
+          colors={['#6366F1', '#8B5CF6']}
+          style={styles.avatarSection}
+        >
           <View style={styles.avatarContainer}>
             <View style={styles.avatar}>
               <Text style={styles.avatarText}>T</Text>
@@ -86,8 +108,14 @@ const ProfileScreen = ({ navigation }) => {
             <Text style={styles.profileName}>{profileData.name}</Text>
             <Text style={styles.profileSubtitle}>{profileData.business}</Text>
             <View style={styles.joinDateContainer}>
-              <Icon name="calendar-today" size={16} color="rgba(255, 255, 255, 0.8)" />
-              <Text style={styles.joinDate}>Member since {profileData.joinDate}</Text>
+              <Icon
+                name="calendar-today"
+                size={16}
+                color="rgba(255, 255, 255, 0.8)"
+              />
+              <Text style={styles.joinDate}>
+                Member since {profileData.joinDate}
+              </Text>
             </View>
           </View>
         </LinearGradient>
@@ -95,24 +123,36 @@ const ProfileScreen = ({ navigation }) => {
         {/* Profile Information */}
         <View style={styles.infoSection}>
           <Text style={styles.sectionTitle}>Personal Information</Text>
-          
+
           {renderField('Full Name', profileData.name, 'name', 'person')}
           {renderField('Email Address', profileData.email, 'email', 'email')}
           {renderField('Phone Number', profileData.phone, 'phone', 'phone')}
-          {renderField('Business Name', profileData.business, 'business', 'business')}
+          {renderField(
+            'Business Name',
+            profileData.business,
+            'business',
+            'business',
+          )}
           {renderField('GST Number', profileData.gst, 'gst', 'description')}
-          {renderField('Address', profileData.address, 'address', 'location-on')}
+          {renderField(
+            'Address',
+            profileData.address,
+            'address',
+            'location-on',
+          )}
         </View>
 
         {/* Quick Actions */}
         <View style={styles.actionsSection}>
           <Text style={styles.sectionTitle}>Quick Actions</Text>
-          
+
           <TouchableOpacity style={styles.actionItem}>
             <Icon name="notifications" size={24} color="#6366F1" />
             <View style={styles.actionContent}>
               <Text style={styles.actionTitle}>Notification Settings</Text>
-              <Text style={styles.actionSubtitle}>Manage your alerts and notifications</Text>
+              <Text style={styles.actionSubtitle}>
+                Manage your alerts and notifications
+              </Text>
             </View>
             <Icon name="arrow-forward-ios" size={16} color="#9CA3AF" />
           </TouchableOpacity>
@@ -121,7 +161,9 @@ const ProfileScreen = ({ navigation }) => {
             <Icon name="security" size={24} color="#6366F1" />
             <View style={styles.actionContent}>
               <Text style={styles.actionTitle}>Security Settings</Text>
-              <Text style={styles.actionSubtitle}>Change password and security options</Text>
+              <Text style={styles.actionSubtitle}>
+                Change password and security options
+              </Text>
             </View>
             <Icon name="arrow-forward-ios" size={16} color="#9CA3AF" />
           </TouchableOpacity>
@@ -130,7 +172,9 @@ const ProfileScreen = ({ navigation }) => {
             <Icon name="help" size={24} color="#6366F1" />
             <View style={styles.actionContent}>
               <Text style={styles.actionTitle}>Help & Support</Text>
-              <Text style={styles.actionSubtitle}>Get help and contact support</Text>
+              <Text style={styles.actionSubtitle}>
+                Get help and contact support
+              </Text>
             </View>
             <Icon name="arrow-forward-ios" size={16} color="#9CA3AF" />
           </TouchableOpacity>
@@ -139,7 +183,9 @@ const ProfileScreen = ({ navigation }) => {
             <Icon name="info" size={24} color="#6366F1" />
             <View style={styles.actionContent}>
               <Text style={styles.actionTitle}>About TexPort</Text>
-              <Text style={styles.actionSubtitle}>App version and information</Text>
+              <Text style={styles.actionSubtitle}>
+                App version and information
+              </Text>
             </View>
             <Icon name="arrow-forward-ios" size={16} color="#9CA3AF" />
           </TouchableOpacity>
