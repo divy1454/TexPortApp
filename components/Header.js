@@ -2,8 +2,19 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Header = ({ navigation }) => {
+  const [user, setUser] = React.useState(null);
+
+  React.useEffect(() => {
+    const fetchUser = async () => {
+      const userData = await AsyncStorage.getItem('user');
+      setUser(JSON.parse(userData));
+    };
+    fetchUser();
+  }, []);
+
   const handleAvatarPress = () => {
     if (navigation && navigation.navigate) {
       navigation.navigate('Profile');
@@ -20,7 +31,7 @@ const Header = ({ navigation }) => {
       <View style={styles.headerTop}>
         <View>
           <Text style={styles.headerTitle}>TexPort</Text>
-          <Text style={styles.headerSubtitle}>Welcome, Mr./Ms. User</Text>
+          <Text style={styles.headerSubtitle}>Welcome, {user ? user.name : 'Guest'}</Text>
         </View>
         <View style={styles.headerRight}>
           <TouchableOpacity onPress={() => console.log('Notifications')}>

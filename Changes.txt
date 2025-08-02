@@ -1,5 +1,5 @@
+=============================================================================================================
 31-07-2025 - Done by Harsh
-=============================
  - Replace GST screen to Home Screen
  - Remove Header from all screen except Home Screen
  - Remove Voice Order (Add in Feature Update)
@@ -10,7 +10,7 @@
     - Total Givable Payment
     - Old 5 Receviable Payment Parties details
     - Old 5 Givable Payment Parties details
-==============================
+=============================================================================================================
 31-07-2025 - Done by Divy
    - Removed AI Features from More Screen
    - Added LoginScreen,RegisterScreen,WelcomeScreen
@@ -18,6 +18,15 @@
    - Fixed Redirection Login,Register,Demo
    - Removed Unnecessary Screens
    - Removed Navigation File (No Need)
-===============================
-01-08-2025 - Status
+=============================================================================================================
+01-08-2025 - Done by Harsh
    - Remove AI file from the app.js
+   - Laravel API create (Auth API)
+=============================================================================================================
+02-08-2025 - Done by Harsh
+   - Enabled user authentication: users can now log in and register with database integration.
+   - Displayed logged-in user's name on the Home Screen.
+==============================================================================================================
+03-08-2025 - Done by Harsh
+   - Developed TxtPortApp Admin Panel with comprehensive user management (Add, Edit, Delete, View) and a dashboard showing the latest 10 user records.
+   - Added Admin Panel functionality for managing plans (Add, Edit, Delete, Show, Enable/Disable).
