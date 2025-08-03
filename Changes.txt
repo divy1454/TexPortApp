@@ -30,3 +30,6 @@
 03-08-2025 - Done by Harsh
    - Developed TxtPortApp Admin Panel with comprehensive user management (Add, Edit, Delete, View) and a dashboard showing the latest 10 user records.
    - Added Admin Panel functionality for managing plans (Add, Edit, Delete, Show, Enable/Disable).
+   - Implemented a login system for the Admin Panel, allowing admin users to log in and manage the application.
+   - Added a profile management feature for admin, enabling them to update their profile information.
+==============================================================================================================
