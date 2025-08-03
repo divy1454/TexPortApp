@@ -32,4 +32,5 @@
    - Added Admin Panel functionality for managing plans (Add, Edit, Delete, Show, Enable/Disable).
    - Implemented a login system for the Admin Panel, allowing admin users to log in and manage the application.
    - Added a profile management feature for admin, enabling them to update their profile information.
+   - Changes to the Auth page to improve user experience and functionality.
 ==============================================================================================================
