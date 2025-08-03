@@ -12,6 +12,7 @@ import PartiesScreen from './src/screens/PartiesScreen';
 import StaffScreen from './src/screens/StaffScreen';
 import MoreScreen from './src/screens/MoreScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
+import DemoScreen from './src/screens/DemoScreen';
 
 // Modal screens
 // import VoiceCommandScreen from './src/screens/modals/VoiceCommandScreen';
@@ -51,6 +52,9 @@ const TabNavigator = () => (
           case 'More':
             iconName = 'more-horiz';
             break;
+          case 'Demo':
+            iconName = 'star';
+            break;
           default:
             iconName = 'home';
         }
@@ -66,6 +70,7 @@ const TabNavigator = () => (
     <Tab.Screen name="Parties" component={PartiesScreen} />
     <Tab.Screen name="Staff" component={StaffScreen} />
     <Tab.Screen name="More" component={MoreScreen} />
+    <Tab.Screen name="Demo" component={DemoScreen} />
   </Tab.Navigator>
 );
 

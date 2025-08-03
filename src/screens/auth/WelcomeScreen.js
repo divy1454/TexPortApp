@@ -164,7 +164,7 @@ const WelcomeScreen = ({ navigation }) => {
         { text: 'Back', style: 'cancel' },
         { 
           text: 'Explore Demo', 
-          onPress: () => navigation.replace('Main'),
+          onPress: () => navigation.navigate('Main', { screen: 'Demo' }),
           style: 'default'
         }
       ]
