@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput, ScrollView, StyleSheet, SafeAreaView, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useDemoMode } from '../../context/DemoContext';
+
 
 const AddPartyScreen = ({ navigation }) => {
+    const { demoMode, showDemoAlert } = useDemoMode();
+  
   const [formData, setFormData] = useState({
     partyName: '',
     gstNumber: '',
@@ -53,6 +57,10 @@ const AddPartyScreen = ({ navigation }) => {
   };
 
   const handleSave = () => {
+    if(demoMode) {
+      showDemoAlert();
+      return;
+    }
     if (validateForm()) {
       Alert.alert(
         'Success!',

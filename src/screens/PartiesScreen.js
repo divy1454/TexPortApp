@@ -3,9 +3,13 @@ import { View, ScrollView, Text, TouchableOpacity, TextInput, StyleSheet, SafeAr
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import PartyCard from '../../components/PartyCard';
 import Header from '../../components/Header';
+import DemoBanner from '../../components/DemoBanner';
+import { useDemoMode } from '../context/DemoContext';
+import { demoBuyers } from '../data/demoBuyers';
 
 const PartiesScreen = ({ navigation }) => {
   const [searchText, setSearchText] = useState('');
+  const { demoMode, showDemoAlert } = useDemoMode();
 
   const parties = [
     {
@@ -34,20 +38,32 @@ const PartiesScreen = ({ navigation }) => {
     }
   ];
 
-  const filteredParties = parties.filter(party =>
+  // Get current data based on demo mode
+  const currentParties = demoMode ? demoBuyers : parties;
+
+  const filteredParties = currentParties.filter(party =>
     party.name.toLowerCase().includes(searchText.toLowerCase()) ||
     party.gst.toLowerCase().includes(searchText.toLowerCase())
   );
 
+  const handleAddParty = () => {
+    // if (demoMode) {
+    //   showDemoAlert();
+    //   return;
+    // }
+    navigation.navigate('AddParty');
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <Header navigation={navigation} />
+      <DemoBanner navigation={navigation} />
       <ScrollView style={styles.content}>
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Party Management</Text>
           <TouchableOpacity 
             style={styles.addButton} 
-            onPress={() => navigation.navigate('AddParty')}
+            onPress={handleAddParty}
           >
             <Text style={styles.addButtonText}>+ Add Party</Text>
           </TouchableOpacity>

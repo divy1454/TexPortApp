@@ -3,9 +3,14 @@ import { View, Text, TouchableOpacity, ScrollView, StyleSheet, SafeAreaView, Ale
 import { LinearGradient } from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Header from '../../components/Header';
+import DemoBanner from '../../components/DemoBanner';
+import { useDemoMode } from '../context/DemoContext';
+import { demoDashboard } from '../data/demoDashboard';
 
 const HomeScreen = ({ navigation }) => {
-  // Sample data for parties with payment details
+  const { demoMode, showDemoAlert } = useDemoMode();
+
+  // Sample data for parties with payment details (production data)
   const partiesReceivablePayments = [
     { 
       id: 1, 
@@ -82,18 +87,22 @@ const HomeScreen = ({ navigation }) => {
     }
   ];
 
+  // Get data based on demo mode
+  const currentReceivablePayments = demoMode ? demoDashboard.receivablePayments : partiesReceivablePayments;
+  const currentGivablePayments = demoMode ? demoDashboard.givablePayments : partiesGivablePayments;
+
   // Calculate totals
-  const totalReceivable = partiesReceivablePayments.reduce((sum, party) => {
+  const totalReceivable = demoMode ? demoDashboard.totalReceivablePayment : partiesReceivablePayments.reduce((sum, party) => {
     const amount = parseInt(party.amount.replace(/[₹,]/g, ''));
     return sum + amount;
   }, 0);
 
-  const totalGivable = partiesGivablePayments.reduce((sum, party) => {
+  const totalGivable = demoMode ? demoDashboard.totalGivablePayment : partiesGivablePayments.reduce((sum, party) => {
     const amount = parseInt(party.amount.replace(/[₹,]/g, ''));
     return sum + amount;
   }, 0);
 
-  const totalParties = [...partiesReceivablePayments, ...partiesGivablePayments].length;
+  const totalParties = demoMode ? demoDashboard.totalParties : [...partiesReceivablePayments, ...partiesGivablePayments].length;
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -108,6 +117,10 @@ const HomeScreen = ({ navigation }) => {
   };
 
   const handlePartyPress = (party) => {
+    if (demoMode) {
+      showDemoAlert();
+      return;
+    }
     Alert.alert(
       party.name,
       `Amount: ${party.amount}\nDue: ${party.dueDate}\nStatus: ${party.status}`,
@@ -152,6 +165,7 @@ const HomeScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <Header navigation={navigation} />
+      <DemoBanner navigation={navigation} />
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Welcome Section */}
         <LinearGradient colors={['#6366F1', '#8B5CF6']} style={styles.welcomeCard}>
@@ -182,8 +196,8 @@ const HomeScreen = ({ navigation }) => {
         </View>
 
         {/* Payment Tables */}
-        {renderPartyTable('Parties to Receive Payment From', partiesReceivablePayments, '💰')}
-        {renderPartyTable('Parties to Give Payment To', partiesGivablePayments, '💸')}
+        {renderPartyTable('Parties to Receive Payment From', currentReceivablePayments, '💰')}
+        {renderPartyTable('Parties to Give Payment To', currentGivablePayments, '💸')}
 
         {/* Quick Actions */}
         <View style={styles.quickActionsContainer}>

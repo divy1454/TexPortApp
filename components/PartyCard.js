@@ -1,7 +1,10 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { useDemoMode } from '../src/context/DemoContext';
 
 const PartyCard = ({ party, navigation }) => {
+  const { demoMode, showDemoAlert } = useDemoMode();
+
   const getStatusColor = (status) => {
     switch (status) {
       case 'Active': return '#10B981';
@@ -41,10 +44,16 @@ const PartyCard = ({ party, navigation }) => {
       <View style={styles.partyFooter}>
         <Text style={styles.partyGst}>GST: {party.gst}</Text>
         <View style={styles.partyActions}>
-          <TouchableOpacity style={styles.partyActionButton}>
+          <TouchableOpacity 
+            style={styles.partyActionButton}
+            onPress={() => demoMode && showDemoAlert()}
+          >
             <Text style={styles.partyActionButtonText}>📞 Call</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.partyActionButton}>
+          <TouchableOpacity 
+            style={styles.partyActionButton}
+            onPress={() => demoMode && showDemoAlert()}
+          >
             <Text style={styles.partyActionButtonText}>💬 Message</Text>
           </TouchableOpacity>
         </View>

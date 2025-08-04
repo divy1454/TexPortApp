@@ -3,8 +3,11 @@ import { View, ScrollView, Text, TouchableOpacity, StyleSheet, SafeAreaView } fr
 import { LinearGradient } from 'expo-linear-gradient';
 import StaffCard from '../../components/StaffCard';
 import Header from '../../components/Header';
+import DemoBanner from '../../components/DemoBanner';
+import { useDemoMode } from '../context/DemoContext';
 
 const StaffScreen = ({ navigation }) => {
+  const { demoMode, showDemoAlert } = useDemoMode();
   const staff = [
     {
       id: 1,
@@ -54,14 +57,16 @@ const StaffScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <Header navigation={navigation} />
+      <DemoBanner navigation={navigation} />
       <ScrollView style={styles.content}>
+        {/* Header with Attendance Button */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Staff Management</Text>
           <TouchableOpacity 
             style={styles.attendanceButton} 
-            onPress={() => navigation.navigate('Attendance', { staff })}
+            onPress={() => demoMode ? showDemoAlert() : navigation.navigate('Attendance')}
           >
-            <Text style={styles.attendanceButtonText}>✓ Attendance</Text>
+            <Text style={styles.attendanceButtonText}>📝 Attendance</Text>
           </TouchableOpacity>
         </View>
 
@@ -93,7 +98,10 @@ const StaffScreen = ({ navigation }) => {
           <StaffCard key={worker.id} worker={worker} />
         ))}
         
-        <TouchableOpacity style={styles.viewAllButton}>
+        <TouchableOpacity 
+          style={styles.viewAllButton}
+          onPress={() => demoMode && showDemoAlert()}
+        >
           <Text style={styles.viewAllButtonText}>View All 14 Machine Operators</Text>
         </TouchableOpacity>
 

@@ -1,7 +1,9 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { useDemoMode } from '../src/context/DemoContext';
 
 const TransactionCard = ({ transaction, navigation }) => {
+  const { demoMode, showDemoAlert } = useDemoMode();
   const getStatusColor = (status) => {
     switch (status) {
       case 'paid': return '#10B981';
@@ -43,17 +45,23 @@ const TransactionCard = ({ transaction, navigation }) => {
           {transaction.status === 'overdue' ? `Penalty: +₹${transaction.penalty}` : transaction.paymentMethod}
         </Text>
         {transaction.status === 'overdue' && (
-          <TouchableOpacity style={styles.reminderButton}>
+          <TouchableOpacity 
+            style={styles.reminderButton}
+            onPress={() => demoMode && showDemoAlert()}
+          >
             <Text style={styles.reminderButtonText}>Send Reminder</Text>
           </TouchableOpacity>
         )}
         {transaction.status === 'pending' && (
-          <TouchableOpacity style={styles.payButton}>
+          <TouchableOpacity 
+            style={styles.payButton}
+            onPress={() => demoMode && showDemoAlert()}
+          >
             <Text style={styles.payButtonText}>Pay Now</Text>
           </TouchableOpacity>
         )}
         {transaction.status === 'paid' && (
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => demoMode && showDemoAlert()}>
             <Text style={styles.viewProofText}>View Proof</Text>
           </TouchableOpacity>
         )}

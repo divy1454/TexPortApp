@@ -13,10 +13,12 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useDemoMode } from '../../context/DemoContext';
 
 const { width, height } = Dimensions.get('window');
 
 const WelcomeScreen = ({ navigation }) => {
+  const { enableDemoMode } = useDemoMode();
   const logoAnimation = useRef(new Animated.Value(0)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(50)).current;
@@ -163,8 +165,11 @@ const WelcomeScreen = ({ navigation }) => {
       [
         { text: 'Back', style: 'cancel' },
         { 
-          text: 'Explore Demo', 
-          onPress: () => navigation.navigate('Main', { screen: 'Demo' }),
+          text: 'Try Demo', 
+          onPress: () => {
+            enableDemoMode();
+            navigation.navigate('Main', { screen: 'Home' });
+          },
           style: 'default'
         }
       ]
@@ -321,7 +326,7 @@ const WelcomeScreen = ({ navigation }) => {
             activeOpacity={0.8}
           >
             <Icon name="play-circle-outline" size={18} color="#8B5CF6" />
-            <Text style={styles.demoButtonText}>Explore Demo</Text>
+            <Text style={styles.demoButtonText}>Try Demo</Text>
           </TouchableOpacity>
         </View>
 

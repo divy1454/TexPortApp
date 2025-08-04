@@ -4,6 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { DemoProvider } from './src/context/DemoContext';
 
 // Import all screens
 import HomeScreen from './src/screens/HomeScreen';
@@ -12,7 +13,6 @@ import PartiesScreen from './src/screens/PartiesScreen';
 import StaffScreen from './src/screens/StaffScreen';
 import MoreScreen from './src/screens/MoreScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
-import DemoScreen from './src/screens/DemoScreen';
 
 // Modal screens
 // import VoiceCommandScreen from './src/screens/modals/VoiceCommandScreen';
@@ -70,60 +70,61 @@ const TabNavigator = () => (
     <Tab.Screen name="Parties" component={PartiesScreen} />
     <Tab.Screen name="Staff" component={StaffScreen} />
     <Tab.Screen name="More" component={MoreScreen} />
-    <Tab.Screen name="Demo" component={DemoScreen} />
   </Tab.Navigator>
 );
 
 
 const App = () => (
-  <NavigationContainer>
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      {/* Auth Screens */}
-      <Stack.Screen name="Welcome" component={WelcomeScreen} />
-      <Stack.Screen name="Login" component={LoginScreen} />
-      <Stack.Screen name="Register" component={RegisterScreen} />
+  <DemoProvider>
+    <NavigationContainer>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        {/* Auth Screens */}
+        <Stack.Screen name="Welcome" component={WelcomeScreen} />
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="Register" component={RegisterScreen} />
 
-      {/* Main App Tabs */}
-      <Stack.Screen name="Main" component={TabNavigator} />
+        {/* Main App Tabs */}
+        <Stack.Screen name="Main" component={TabNavigator} />
 
-      {/* Modals */}
-      {/* <Stack.Screen 
-        name="AIPredictions" 
-        component={AIPredictionsScreen}
-        options={{ presentation: 'modal' }}
-      /> */}
-      <Stack.Screen 
-        name="DuePayments" 
-        component={DuePaymentsScreen}
-        options={{ presentation: 'modal' }}
-      />
-      <Stack.Screen 
-        name="AddParty" 
-        component={AddPartyScreen}
-        options={{ presentation: 'modal' }}
-      />
-      <Stack.Screen 
-        name="BillSorting" 
-        component={BillSortingScreen}
-        options={{ presentation: 'modal' }}
-      />
-      <Stack.Screen 
-        name="TransporterBooking" 
-        component={TransporterBookingScreen}
-        options={{ presentation: 'modal' }}
-      />
-      <Stack.Screen 
-        name="Attendance" 
-        component={AttendanceScreen}
-        options={{ presentation: 'modal' }}
-      />
-      <Stack.Screen 
-        name="Profile" 
-        component={ProfileScreen}
-        options={{ presentation: 'modal' }}
-      />
-    </Stack.Navigator>
-  </NavigationContainer>
+        {/* Modals */}
+        {/* <Stack.Screen 
+          name="AIPredictions" 
+          component={AIPredictionsScreen}
+          options={{ presentation: 'modal' }}
+        /> */}
+        <Stack.Screen 
+          name="DuePayments" 
+          component={DuePaymentsScreen}
+          options={{ presentation: 'modal' }}
+        />
+        <Stack.Screen 
+          name="AddParty" 
+          component={AddPartyScreen}
+          options={{ presentation: 'modal' }}
+        />
+        <Stack.Screen 
+          name="BillSorting" 
+          component={BillSortingScreen}
+          options={{ presentation: 'modal' }}
+        />
+        <Stack.Screen 
+          name="TransporterBooking" 
+          component={TransporterBookingScreen}
+          options={{ presentation: 'modal' }}
+        />
+        <Stack.Screen 
+          name="Attendance" 
+          component={AttendanceScreen}
+          options={{ presentation: 'modal' }}
+        />
+        <Stack.Screen 
+          name="Profile" 
+          component={ProfileScreen}
+          options={{ presentation: 'modal' }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
+  </DemoProvider>
 );
 
 export default App;

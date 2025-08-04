@@ -3,8 +3,13 @@ import { View, ScrollView, Text, TouchableOpacity, StyleSheet, SafeAreaView } fr
 import { LinearGradient } from 'expo-linear-gradient';
 import TransactionCard from '../../components/TransactionCard';
 import Header from '../../components/Header';
+import DemoBanner from '../../components/DemoBanner';
+import { useDemoMode } from '../context/DemoContext';
+import { demoPayments, demoPaymentStats } from '../data/demoPayments';
 
 const PaymentsScreen = ({ navigation }) => {
+  const { demoMode, showDemoAlert } = useDemoMode();
+
   const transactions = [
     {
       id: 1,
@@ -36,9 +41,34 @@ const PaymentsScreen = ({ navigation }) => {
     }
   ];
 
+  // Get current data based on demo mode
+  const currentTransactions = demoMode ? demoPayments : transactions;
+  const currentStats = demoMode ? demoPaymentStats : {
+    totalOverdue: 245000,
+    overdueCount: 12,
+    penalty: 12500
+  };
+
+  const handleDuePaymentsPress = () => {
+    if (demoMode) {
+      showDemoAlert();
+      return;
+    }
+    navigation.navigate('DuePayments');
+  };
+
+  const handleBillSortingPress = () => {
+    if (demoMode) {
+      showDemoAlert();
+      return;
+    }
+    navigation.navigate('BillSorting');
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <Header navigation={navigation} />
+      <DemoBanner navigation={navigation} />
       <ScrollView style={styles.content}>
         {/* Due Payment Alert */}
         <LinearGradient
@@ -48,13 +78,13 @@ const PaymentsScreen = ({ navigation }) => {
           <View style={styles.alertHeader}>
             <Text style={styles.alertTitle}>⚠️ Payment Alerts</Text>
             <View style={styles.alertBadge}>
-              <Text style={styles.alertBadgeText}>12 Due</Text>
+              <Text style={styles.alertBadgeText}>{currentStats.overdueCount} Due</Text>
             </View>
           </View>
-          <Text style={styles.alertSubtext}>Total overdue: ₹2,45,000 + ₹12,500 penalty</Text>
+          <Text style={styles.alertSubtext}>Total overdue: ₹{(currentStats.totalOverdue / 1000).toFixed(0)}K + ₹{(currentStats.penalty / 1000).toFixed(1)}K penalty</Text>
           <TouchableOpacity 
             style={styles.alertButton} 
-            onPress={() => navigation.navigate('DuePayments')}
+            onPress={handleDuePaymentsPress}
           >
             <Text style={styles.alertButtonText}>View All Due Payments</Text>
           </TouchableOpacity>
@@ -65,14 +95,14 @@ const PaymentsScreen = ({ navigation }) => {
           <Text style={styles.sectionTitle}>Recent Transactions</Text>
           <TouchableOpacity 
             style={styles.sortButton} 
-            onPress={() => navigation.navigate('BillSorting')}
+            onPress={handleBillSortingPress}
           >
             <Text style={styles.sortButtonText}>📊 Sort Bills</Text>
           </TouchableOpacity>
         </View>
 
         {/* Transaction List */}
-        {transactions.map((transaction) => (
+        {currentTransactions.map((transaction) => (
           <TransactionCard
             key={transaction.id}
             transaction={transaction}
