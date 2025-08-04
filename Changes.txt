@@ -34,3 +34,6 @@
    - Added a profile management feature for admin, enabling them to update their profile information.
    - Changes to the Auth page to improve user experience and functionality.
 ==============================================================================================================
+04-08-2025 -Done by Harsh
+   - Implemented a Demo Mode feature that allows users to explore the app without making permanent changes.
+   - Added a Demo Alert that informs users about the limitations of the demo mode.
