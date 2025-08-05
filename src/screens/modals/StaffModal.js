@@ -12,6 +12,7 @@ const StaffModal = ({ visible, mode, formData, setFormData, onSubmit, onCancel, 
   const [salaryTypeOpen, setSalaryTypeOpen] = React.useState(false);
   // For edit mode: select staff member by role
   const staffOptions = mode === 'edit' ? staff.filter(s => s.role === formData.role) : [];
+
   return (
     <Modal
       visible={visible}
@@ -22,29 +23,11 @@ const StaffModal = ({ visible, mode, formData, setFormData, onSubmit, onCancel, 
       <View style={styles.overlay}>
         <View style={styles.contentScrollable}>
           <LinearGradient colors={["#6366F1", "#8B5CF6"]} style={styles.header}>
-            <Text style={styles.headerText}>{mode === 'add' ? 'Add Staff Member' : 'Edit Staff Member'}</Text>
+            <Text style={styles.headerText}>{mode === 'add' ? 'Add Staff Member' : mode === 'edit' ? 'Edit Staff Member' : 'Delete Staff Member'}</Text>
           </LinearGradient>
-          {/* Remove KeyboardAwareScrollView to fix VirtualizedLists error */}
-          <ScrollView style={{ width: '100%' }} contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 24 }} keyboardShouldPersistTaps="handled">
+          <View style={{ width: '100%', paddingHorizontal: 20, paddingBottom: 24 }}>
             {/* Modal Content Starts */}
-            {/* Role Picker */}
-            <View style={styles.inputContainer}>
-              <Icon name="badge" size={20} color="#6366F1" style={styles.inputIcon} />
-              <DropDownPicker
-                open={roleOpen}
-                value={formData.role}
-                items={[
-                  { label: 'Machine Operator', value: 'Machine Operator' },
-                  { label: 'Meter Calculator', value: 'Meter Calculator' },
-                ]}
-                setOpen={setRoleOpen}
-                setValue={val => setFormData({ ...formData, role: val() })}
-                style={styles.picker}
-                dropDownContainerStyle={styles.dropdown}
-                zIndex={100}
-                placeholder="Role"
-              />
-            </View>
+            {/* ...existing code... */}
             {/* Edit Staff Picker */}
             {mode === 'edit' && staffOptions.length > 0 && (
               <View style={styles.inputContainer}>
@@ -215,7 +198,7 @@ const StaffModal = ({ visible, mode, formData, setFormData, onSubmit, onCancel, 
               </TouchableOpacity>
             </View>
             {/* Modal Content Ends */}
-          </ScrollView>
+          </View>
         </View>
       </View>
     </Modal>
