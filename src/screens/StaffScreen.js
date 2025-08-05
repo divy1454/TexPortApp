@@ -1,14 +1,16 @@
-import React from 'react';
-import { View, ScrollView, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
+import React, { useState } from 'react';
+import { View, ScrollView, Text, TouchableOpacity, StyleSheet, SafeAreaView, Alert, Modal, TextInput } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import StaffCard from '../../components/StaffCard';
 import Header from '../../components/Header';
 import DemoBanner from '../../components/DemoBanner';
 import { useDemoMode } from '../context/DemoContext';
+import StaffModal from './modals/StaffModal';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const StaffScreen = ({ navigation }) => {
   const { demoMode, showDemoAlert } = useDemoMode();
-  const staff = [
+  const [staff, setStaff] = useState([
     {
       id: 1,
       name: 'Ramesh Kumar',
@@ -52,7 +54,73 @@ const StaffScreen = ({ navigation }) => {
       meterRate: 0.5,
       status: 'present'
     }
-  ];
+  ]);
+
+  // Modal state for Add/Edit
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMode, setModalMode] = useState('add'); // 'add' or 'edit'
+  const [formData, setFormData] = useState({
+    id: null,
+    name: '',
+    role: 'Machine Operator',
+    machine: '',
+    hoursToday: '',
+    hourlyRate: '',
+    metersToday: '',
+    meterRate: '',
+    status: 'present',
+  });
+
+  // Open Add Staff Modal
+  const openAddModal = () => {
+    setFormData({
+      id: null,
+      name: '',
+      role: 'Machine Operator',
+      machine: '',
+      hoursToday: '',
+      hourlyRate: '',
+      metersToday: '',
+      meterRate: '',
+      status: 'present',
+    });
+    setModalMode('add');
+    setModalVisible(true);
+  };
+
+  // Open Edit Staff Modal
+  const openEditModal = (staffObj) => {
+    setFormData({ ...staffObj });
+    setModalMode('edit');
+    setModalVisible(true);
+  };
+
+  // Handle Add/Edit Submit
+  const handleModalSubmit = () => {
+    if (!formData.name.trim()) {
+      Alert.alert('Validation Error', 'Name is required.');
+      return;
+    }
+    if (modalMode === 'add') {
+      const newId = staff.length ? staff[staff.length - 1].id + 1 : 1;
+      setStaff([...staff, { ...formData, id: newId }]);
+    } else {
+      setStaff(staff.map(s => s.id === formData.id ? { ...formData } : s));
+    }
+    setModalVisible(false);
+  };
+
+  // Delete Staff
+  const handleDeleteStaff = (id) => {
+    Alert.alert(
+      'Delete Staff',
+      'Are you sure you want to delete this staff member?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Delete', style: 'destructive', onPress: () => setStaff(staff.filter(s => s.id !== id)) }
+      ]
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -75,7 +143,9 @@ const StaffScreen = ({ navigation }) => {
           colors={['#3B82F6', '#6366F1']}
           style={styles.summaryCard}
         >
-          <Text style={styles.summaryTitle}>📅 Today's Summary</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Text style={styles.summaryTitle}>📅 Today's Summary</Text>
+          </View>
           <View style={styles.summaryStats}>
             <View style={styles.summaryStatItem}>
               <Text style={styles.summaryStatValue}>18</Text>
@@ -92,30 +162,101 @@ const StaffScreen = ({ navigation }) => {
           </View>
         </LinearGradient>
 
+        <LinearGradient
+          colors={['#F59E0B', '#FCD34D']}
+          style={styles.actionBar}
+        >
+          <View style={styles.actionBarRow}>
+            <TouchableOpacity style={styles.actionBarBtn} onPress={openAddModal}>
+              <Icon name="person-add" size={20} color="#fff" />
+              <Text style={styles.actionBarBtnText}>Add</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.actionBarBtn} onPress={() => staff.length > 0 && openEditModal(staff[0])}>
+              <Icon name="edit" size={20} color="#fff" />
+              <Text style={styles.actionBarBtnText}>Edit</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.actionBarBtn} onPress={() => staff.length > 0 && handleDeleteStaff(staff[0].id)}>
+              <Icon name="delete" size={20} color="#fff" />
+              <Text style={styles.actionBarBtnText}>Delete</Text>
+            </TouchableOpacity>
+          </View>
+        </LinearGradient>
+
         {/* Machine Operators */}
         <Text style={styles.subsectionTitle}>🏭 Machine Operators (14 Machines)</Text>
         {staff.filter(s => s.role === 'Machine Operator').map((worker) => (
-          <StaffCard key={worker.id} worker={worker} />
+          <View key={worker.id} style={{ marginBottom: 8 }}>
+            <StaffCard worker={worker} />
+          </View>
         ))}
-        
-        <TouchableOpacity 
-          style={styles.viewAllButton}
-          onPress={() => demoMode && showDemoAlert()}
-        >
-          <Text style={styles.viewAllButtonText}>View All 14 Machine Operators</Text>
-        </TouchableOpacity>
 
         {/* Meter Calculation Staff */}
         <Text style={styles.subsectionTitle}>📏 Meter Calculation Staff</Text>
         {staff.filter(s => s.role === 'Meter Calculator').map((worker) => (
-          <StaffCard key={worker.id} worker={worker} />
+          <View key={worker.id} style={{ marginBottom: 8 }}>
+            <StaffCard worker={worker} />
+          </View>
         ))}
+
+        {/* Modal for Add/Edit Staff */}
+        <StaffModal
+          visible={modalVisible}
+          mode={modalMode}
+          formData={formData}
+          setFormData={setFormData}
+          onSubmit={handleModalSubmit}
+          onCancel={() => setModalVisible(false)}
+          staff={staff}
+        />
       </ScrollView>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  actionBar: {
+    borderRadius: 16,
+    padding: 18,
+    marginBottom: 24,
+    marginTop: 8,
+    shadowColor: '#F59E0B',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  actionBarRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+    maxWidth: 350,
+    gap: 0,
+  },
+  actionBarBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.35)',
+    paddingHorizontal: 8,
+    paddingVertical: 10,
+    borderRadius: 12,
+    marginHorizontal: 4,
+    shadowColor: '#F59E0B',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.10,
+    shadowRadius: 3,
+    elevation: 1,
+    minWidth: 0,
+    justifyContent: 'center',
+  },
+  actionBarBtnText: {
+    color: '#1F2937',
+    fontWeight: 'bold',
+    fontSize: 16,
+    marginLeft: 8,
+    letterSpacing: 0.5,
+  },
   container: {
     flex: 1,
     backgroundColor: '#F3F4F6',
@@ -201,6 +342,96 @@ const styles = StyleSheet.create({
   viewAllButtonText: {
     color: '#2563EB',
     fontWeight: '600',
+  },
+  addBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#10B981',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+    marginRight: 8,
+  },
+  addBtnText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    marginLeft: 4,
+  },
+  editBtn: {
+    backgroundColor: '#6366F1',
+    padding: 6,
+    borderRadius: 8,
+    marginRight: 8,
+  },
+  deleteBtn: {
+    backgroundColor: '#EF4444',
+    padding: 6,
+    borderRadius: 8,
+  },
+  actionBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F3F4F6',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+    marginLeft: 8,
+  },
+  actionBtnText: {
+    color: '#2563EB',
+    fontWeight: '600',
+    marginLeft: 4,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    borderRadius: 16,
+    padding: 24,
+    width: '100%',
+    maxWidth: 350,
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#1F2937',
+    marginBottom: 16,
+  },
+  modalInput: {
+    width: '100%',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 12,
+    fontSize: 16,
+    color: '#1F2937',
+    backgroundColor: '#F9FAFB',
+  },
+  modalActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginTop: 8,
+  },
+  modalBtn: {
+    flex: 1,
+    backgroundColor: '#6366F1',
+    padding: 12,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginHorizontal: 4,
+  },
+  modalBtnText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
 });
 
