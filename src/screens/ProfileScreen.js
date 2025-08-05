@@ -12,9 +12,12 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useDemoMode } from '../context/DemoContext';
 
 const ProfileScreen = ({ navigation }) => {
   const [isEditing, setIsEditing] = useState(false);
+    const { demoMode, showDemoAlert } = useDemoMode();
+
   const [profileData, setProfileData] = useState({
     name: 'Mr. Rajesh Kumar',
     email: 'rajesh.kumar@texport.com',
@@ -26,6 +29,10 @@ const ProfileScreen = ({ navigation }) => {
   });
 
   const handleSave = () => {
+    if(demoMode) {
+      showDemoAlert();
+      return;
+    }
     Alert.alert(
       'Profile Updated',
       'Your profile has been updated successfully!',
