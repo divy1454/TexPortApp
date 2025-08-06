@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Aler
 import { LinearGradient } from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { API } from '../../../config/apiConfig';
 
 const RegisterScreen = ({ navigation }) => {
   const [formData, setFormData] = useState({
@@ -77,7 +78,7 @@ const RegisterScreen = ({ navigation }) => {
       // axios call to register the user
       setIsLoading(true);
       try {
-        const response = await fetch('http://10.131.152.6:8000/api/signup', {
+        const response = await fetch(`${API}signup`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

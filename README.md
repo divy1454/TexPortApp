@@ -25,6 +25,28 @@ npx expo start
 
 # 3. Scan QR code with Expo Go app (Android/iOS)
 ```
+## 🏃‍♂️ Running the App & Backend
+
+### 1. Start the React Native Expo Project
+
+```bash
+npx expo start
+```
+
+### 2. Start the Backend (Laravel)
+
+```bash
+php artisan serve --host=YOUR_IPV4_ADDRESS --port=8000
+```
+
+> **Tip:** To find your `YOUR_IPV4_ADDRESS`, open Command Prompt and type:
+>
+> ```
+> ipconfig
+> ```
+> Use the IPv4 address listed under your network adapter.
+
+
 
 ---
 

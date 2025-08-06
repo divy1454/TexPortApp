@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, Aler
 import { LinearGradient } from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { API } from '../../../config/apiConfig';
 
 const LoginScreen = ({ navigation }) => {
   const [formData, setFormData] = useState({
@@ -37,7 +38,7 @@ const LoginScreen = ({ navigation }) => {
       // axios request to login endpoint
       setIsLoading(true);
       try {
-        const response = await fetch('http://10.131.152.6:8000/api/login', {
+        const response = await fetch(`${API}login`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
