@@ -46,6 +46,20 @@ php artisan serve --host=YOUR_IPV4_ADDRESS --port=8000
 > ```
 > Use the IPv4 address listed under your network adapter.
 
+### 3. Update the API Base URL
+
+To connect the app to your backend, update the API base URL with your current IP address:
+
+- Open `config/apiConfig.js`.
+- Replace the existing IP address with your `YOUR_IPV4_ADDRESS`:
+
+```js
+// Example
+export const API_BASE_URL = 'http://YOUR_IPV4_ADDRESS:8000/api';
+```
+
+Save the file and restart the app for changes to take effect.
+
 
 
 ---
