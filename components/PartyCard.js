@@ -1,25 +1,67 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useDemoMode } from '../src/context/DemoContext';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const PartyCard = ({ party, navigation }) => {
   const { demoMode, showDemoAlert } = useDemoMode();
 
-  const getStatusColor = (status) => {
+  // Handle different data structures (API vs static data)
+  const partyData = {
+    id: party.id,
+    name: party.name,
+    location: party.location || party.business_location || 'N/A',
+    gst: party.gst || party.gst_no || 'N/A',
+    outstanding: party.outstanding || 0,
+    status: party.status || 'Active', // Default to Active for API data
+    email: party.email,
+    phone: party.phone,
+    address: party.address,
+  };
+
+  const getStatusColor = status => {
     switch (status) {
-      case 'Active': return '#10B981';
-      case 'Alert': return '#F59E0B';
-      case 'Premium': return '#8B5CF6';
-      default: return '#6B7280';
+      case 'Active':
+        return '#10B981';
+      case 'Alert':
+        return '#F59E0B';
+      case 'Premium':
+        return '#8B5CF6';
+      default:
+        return '#6B7280';
     }
   };
 
-  const getStatusIcon = (status) => {
+  const getStatusIcon = status => {
     switch (status) {
-      case 'Active': return '✅';
-      case 'Alert': return '⚠️';
-      case 'Premium': return '⭐';
-      default: return '📋';
+      case 'Active':
+        return '✅';
+      case 'Alert':
+        return '⚠️';
+      case 'Premium':
+        return '⭐';
+      default:
+        return '📋';
+    }
+  };
+
+  // handle button clicked
+  const handleEdit = () => {
+    if (demoMode) {
+      showDemoAlert();
+    } else {
+      // Navigate to edit screen
+      // navigation.navigate('EditParty', { party: partyData });
+      console.log('Editing party:', partyData.id);
+    }
+  };
+
+  const handleDelete = () => {
+    if (demoMode) {
+      showDemoAlert();
+    } else {
+      // Call delete API
+      console.log('Deleting party:', partyData.id);
     }
   };
 
@@ -27,34 +69,41 @@ const PartyCard = ({ party, navigation }) => {
     <View style={styles.partyCard}>
       <View style={styles.partyHeader}>
         <View>
-          <Text style={styles.partyName}>{party.name}</Text>
-          <Text style={styles.partyId}>ID: {party.id}</Text>
-          <Text style={styles.partyLocation}>📍 {party.location}</Text>
+          <Text style={styles.partyName}>{partyData.name}</Text>
+          <Text style={styles.partyId}>ID: PTY-{partyData.id}</Text>
+          <Text style={styles.partyLocation}>
+            <Icon name="location-on" size={16} color="#6B7280" />{' '}
+            {partyData.location}
+          </Text>
         </View>
         <View style={styles.partyRight}>
-          <View style={[styles.statusBadge, { backgroundColor: getStatusColor(party.status) + '20' }]}>
-            <Text style={[styles.statusBadgeText, { color: getStatusColor(party.status) }]}>
-              {getStatusIcon(party.status)} {party.status}
+          {/* <View style={[styles.statusBadge, { backgroundColor: getStatusColor(partyData.status) + '20' }]}>
+            <Text style={[styles.statusBadgeText, { color: getStatusColor(partyData.status) }]}>
+              {getStatusIcon(partyData.status)} {partyData.status}
             </Text>
-          </View>
-          <Text style={styles.partyOutstanding}>₹{party.outstanding.toLocaleString()}</Text>
+          </View> */}
+          <Text style={styles.partyOutstanding}>₹{partyData.outstanding.toLocaleString()}</Text>
           <Text style={styles.partyOutstandingLabel}>Outstanding</Text>
         </View>
       </View>
       <View style={styles.partyFooter}>
-        <Text style={styles.partyGst}>GST: {party.gst}</Text>
+        <Text style={styles.partyGst}>GST: {partyData.gst}</Text>
         <View style={styles.partyActions}>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.partyActionButton}
-            onPress={() => demoMode && showDemoAlert()}
+            onPress={handleEdit}
           >
-            <Text style={styles.partyActionButtonText}>📞 Call</Text>
+            <Text style={styles.partyActionButtonText}>
+              <Icon name="edit" size={16} color="#6366F1" /> Edit
+            </Text>
           </TouchableOpacity>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.partyActionButton}
-            onPress={() => demoMode && showDemoAlert()}
+            onPress={handleDelete}
           >
-            <Text style={styles.partyActionButtonText}>💬 Message</Text>
+            <Text style={styles.partyActionButtonText}>
+              <Icon name="delete" size={16} color="#EF4444" /> Delete
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -138,7 +187,7 @@ const styles = StyleSheet.create({
   },
   partyActionButtonText: {
     color: '#6366F1',
-    fontSize: 12,
+    fontSize: 16,
     fontWeight: '600',
   },
 });

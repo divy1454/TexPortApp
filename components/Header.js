@@ -42,7 +42,9 @@ const Header = ({ navigation }) => {
             style={styles.avatar}
             onPress={handleAvatarPress}
           >
-            <Text style={styles.avatarText}>T</Text>
+            <Text style={styles.avatarText}>
+              {user ? user.name.charAt(0).toUpperCase() : 'T'}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>

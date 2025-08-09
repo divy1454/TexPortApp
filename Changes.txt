@@ -37,3 +37,10 @@
 04-08-2025 -Done by Harsh
    - Implemented a Demo Mode feature that allows users to explore the app without making permanent changes.
    - Added a Demo Alert that informs users about the limitations of the demo mode.
+==============================================================================================================
+09-08-2025 - Done by Harsh
+   - Improved the Add Party Screen by implementing a new ID generation system that fetches the next available party ID from the server.
+   - Enhanced the Add Party Screen to automatically fetch and display the next party ID when the screen is opened.
+   - Implemented loading indicators to improve user experience during data fetching.
+   - Added error handling to ensure the app gracefully handles issues when fetching the next party ID.
+==============================================================================================================

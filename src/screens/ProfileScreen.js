@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -13,23 +13,75 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDemoMode } from '../context/DemoContext';
+import { format } from 'date-fns';
+
 
 const ProfileScreen = ({ navigation }) => {
   const [isEditing, setIsEditing] = useState(false);
-    const { demoMode, showDemoAlert } = useDemoMode();
+  const { demoMode, showDemoAlert } = useDemoMode();
+
+  // Helper function to safely format dates
+  const formatMemberDate = (dateString) => {
+    if (!dateString) return 'Member since January 2024';
+    
+    try {
+      // Handle different date formats
+      let date;
+      
+      // If it's already a readable format like "January 2024", return as is
+      if (typeof dateString === 'string' && dateString.match(/^[A-Za-z]+ \d{4}$/)) {
+        return `Member since ${dateString}`;
+      }
+      
+      // Handle null, undefined, or empty values
+      if (!dateString || dateString === 'null' || dateString === 'undefined') {
+        return 'Member since January 2025';
+      }
+      
+      // Try to parse as date
+      date = new Date(dateString);
+      
+      // Check if date is valid
+      if (isNaN(date.getTime())) {
+        console.warn('Invalid date format:', dateString);
+        return `Member since ${dateString}`;
+      }
+      
+      return `Created on ${format(date, "dd-MM-yyyy")}`;
+    } catch (error) {
+      console.warn('Error formatting date:', error, 'Original value:', dateString);
+      return 'Member since January 2024';
+    }
+  };
 
   const [profileData, setProfileData] = useState({
-    name: 'Mr. Rajesh Kumar',
-    email: 'rajesh.kumar@texport.com',
-    phone: '+91 98765 43210',
-    business: 'TexPort Digital Textile',
-    gst: '24ABCDE1234F1Z5',
-    address: '123 Textile Market, Ahmedabad, Gujarat 380001',
-    joinDate: 'January 2024',
+    name: 'Demo User Name',
+    email: 'demo@example.com',
+    phone: '+911234567890',
+    business_name: 'TexPort Digital Textile',
+    gst_no: '',
+    business_location: '123 Textile Market, Surat, Gujarat 380001',
+    created_at: '2025-01-01',
   });
 
+  // get data from the async storage and set it to profileData
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const data = await AsyncStorage.getItem('user');
+        if (data) {
+          setProfileData(JSON.parse(data));
+        }
+      } catch (error) {
+        console.error('Error fetching profile data:', error);
+      }
+    };
+
+    getData();
+  }, []);
+
   const handleSave = () => {
-    if(demoMode) {
+    if (demoMode) {
       showDemoAlert();
       return;
     }
@@ -110,10 +162,12 @@ const ProfileScreen = ({ navigation }) => {
         >
           <View style={styles.avatarContainer}>
             <View style={styles.avatar}>
-              <Text style={styles.avatarText}>T</Text>
+              <Text style={styles.avatarText}>
+                {profileData.name.charAt(0)}
+              </Text>
             </View>
             <Text style={styles.profileName}>{profileData.name}</Text>
-            <Text style={styles.profileSubtitle}>{profileData.business}</Text>
+            <Text style={styles.profileSubtitle}>{profileData.business_name}</Text>
             <View style={styles.joinDateContainer}>
               <Icon
                 name="calendar-today"
@@ -121,7 +175,7 @@ const ProfileScreen = ({ navigation }) => {
                 color="rgba(255, 255, 255, 0.8)"
               />
               <Text style={styles.joinDate}>
-                Member since {profileData.joinDate}
+                {formatMemberDate(profileData.created_at)}
               </Text>
             </View>
           </View>
@@ -136,15 +190,15 @@ const ProfileScreen = ({ navigation }) => {
           {renderField('Phone Number', profileData.phone, 'phone', 'phone')}
           {renderField(
             'Business Name',
-            profileData.business,
-            'business',
+            profileData.business_name,
+            'business_name',
             'business',
           )}
-          {renderField('GST Number', profileData.gst, 'gst', 'description')}
+          {renderField('GST Number', profileData.gst_no, 'gst_no', 'description')}
           {renderField(
             'Address',
-            profileData.address,
-            'address',
+            profileData.business_location,
+            'business_location',
             'location-on',
           )}
         </View>

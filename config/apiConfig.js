@@ -4,7 +4,7 @@
  */
 
 // Base API URL
-export const API = "http://YOUR_IPV4_ADDRESS:8000/api/";
+export const API = "http://10.170.126.6:8000/api/";
 
 // // You can also export individual endpoints if needed
 // export const API_ENDPOINTS = {
