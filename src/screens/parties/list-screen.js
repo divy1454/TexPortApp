@@ -12,12 +12,12 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import PartyCard from '../../components/PartyCard';
-import Header from '../../components/Header';
-import DemoBanner from '../../components/DemoBanner';
-import { useDemoMode } from '../context/DemoContext';
-import { demoBuyers } from '../data/demoBuyers';
-import API from '../../config/apiConfig';
+import PartyCard from '../../../components/PartyCard';
+import Header from '../../../components/Header';
+import DemoBanner from '../../../components/DemoBanner';
+import { useDemoMode } from '../../context/DemoContext';
+import { demoBuyers } from '../../data/demoBuyers';
+import API from '../../../config/apiConfig';
 
 const PartiesScreen = ({ navigation }) => {
   const [searchText, setSearchText] = useState('');

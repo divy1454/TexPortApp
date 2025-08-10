@@ -18,122 +18,101 @@ import { useDemoMode } from '../../context/DemoContext';
 import { API } from '../../../config/apiConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-/**
- * AddPartyScreen - Future-Proof Implementation
- *
- * This screen is designed to automatically handle keyboard avoidance for any number of input fields.
- * Key features:
- * - Automatic keyboard avoidance using KeyboardAwareScrollView
- * - Dynamic layout that adapts to screen size and platform
- * - Helper function (createInputProps) for consistent input creation
- * - Cross-platform optimized (iOS/Android)
- *
- * To add new input fields:
- * 1. Add the field to formData state
- * 2. Add validation to validateForm function
- * 3. Use the pattern shown in the comments below
- *
- * No manual keyboard offset adjustments needed!
- */
-
-const AddPartyScreen = ({ navigation }) => {
+const EditPartyScreen = ({ route, navigation }) => {
+  const { party } = route.params;
   const { demoMode, showDemoAlert } = useDemoMode();
   const scrollViewRef = useRef(null);
   const { height: screenHeight } = Dimensions.get('window');
   const [isLoading, setIsLoading] = useState(false);
-  const [isLoadingUser, setIsLoadingUser] = useState(true);
-  const [newPartyId, setNewPartyId] = useState(0);
+  const [isLoadingUser, setIsLoadingUser] = useState(false);
+  const [newPartyId, setNewPartyId] = useState('PTY-' + party.id); // Default ID
   const [formData, setFormData] = useState({
-    partyName: '',
-    gstNumber: '',
-    location: '',
-    business_name: '',
-    business_location: '',
-    phoneNumber: '',
-    email: '',
-    address: '',
-    created_by: '',
+    partyName: party.name,
+    gstNumber: party.gst || '',
+    // location: party.location || '',
+    business_name: party.business_name || '',
+    business_location: party.business_location || '',
+    phoneNumber: party.phone || '',
+    email: party.email || '',
+    address: party.address || '',
+    partyId: party.id,
   });
   const [errors, setErrors] = useState({});
 
   // Get user ID from AsyncStorage when component mounts
-  useEffect(() => {
-    const getUserFromStorage = async () => {
-      try {
-        setIsLoadingUser(true);
-        const userString = await AsyncStorage.getItem('user');
-        if (userString) {
-          const user = JSON.parse(userString);
-          // Set the created_by field with user ID
-          if (user.id) {
-            const userId = user.id.toString();
-            setFormData(prev => ({ ...prev, created_by: userId }));
+  //   useEffect(() => {
+  //     const getUserFromStorage = async () => {
+  //       try {
+  //         setIsLoadingUser(true);
+  //         const userString = await AsyncStorage.getItem('user');
+  //         if (userString) {
+  //           const user = JSON.parse(userString);
+  //           // Set the created_by field with user ID
+  //           if (user.id) {
+  //             const userId = user.id.toString();
+  //             setFormData(prev => ({ ...prev, created_by: userId }));
 
-            // Get new party ID after user is loaded
-            try {
-              const response = await fetch(`${API}parties/new-id/${userId}`);
+  //             // Get new party ID after user is loaded
+  //             try {
+  //               const response = await fetch(`${API}parties/new-id/${userId}`);
 
-              // Check if response is ok
-              if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-              }
+  //               // Check if response is ok
+  //               if (!response.ok) {
+  //                 throw new Error(`HTTP error! status: ${response.status}`);
+  //               }
 
-              // Get response text first to check if it's valid JSON
-              const responseText = await response.text();
+  //               // Get response text first to check if it's valid JSON
+  //               const responseText = await response.text();
 
-              // Check if response is empty
-              if (!responseText) {
-                console.warn('Empty response from server for new party ID');
-                setNewPartyId('PTY-001'); // Default fallback
-                return;
-              }
+  //               // Check if response is empty
+  //               if (!responseText) {
+  //                 console.warn('Empty response from server for new party ID');
+  //                 setNewPartyId('PTY-001'); // Default fallback
+  //                 return;
+  //               }
 
-              // Try to parse JSON
-              let data;
-              try {
-                data = JSON.parse(responseText);
-              } catch (jsonError) {
-                console.error('JSON parse error for new party ID:', jsonError);
-                console.log('Response was not valid JSON:', responseText);
-                setNewPartyId('PTY-001'); // Default fallback
-                return;
-              }
+  //               // Try to parse JSON
+  //               let data;
+  //               try {
+  //                 data = JSON.parse(responseText);
+  //               } catch (jsonError) {
+  //                 console.error('JSON parse error for new party ID:', jsonError);
+  //                 console.log('Response was not valid JSON:', responseText);
+  //                 setNewPartyId('PTY-001'); // Default fallback
+  //                 return;
+  //               }
 
-              if (data.success) {
-                console.log('New party ID generated:', data.new_id);
-                setNewPartyId(data.new_id);
-              } else {
-                console.error('Failed to get new party ID:', data.message);
-                setNewPartyId('PTY-001'); // Default fallback
-              }
-            } catch (error) {
-              console.error('Error fetching new party ID:', error);
-              setNewPartyId('PTY-001'); // Default fallback
-            }
-          } else {
-            console.warn('User ID not found in stored user data');
-            setNewPartyId('PTY-001'); // Default fallback
-          }
-        } else {
-          console.warn('No user data found in AsyncStorage');
-          Alert.alert('Error', 'User session not found. Please login again.');
-          // Log out the user
-          await AsyncStorage.removeItem('user');
-          navigation.navigate('Login');
-        }
-      } catch (error) {
-        console.error('Error getting user from AsyncStorage:', error);
-        Alert.alert('Error', 'Failed to load user data. Please login again.');
-        // Log out the user
-        await AsyncStorage.removeItem('user');
-        navigation.navigate('Login');
-      } finally {
-        setIsLoadingUser(false);
-      }
-    };
+  //               if (data.success) {
+  //                 console.log('New party ID generated:', data.new_id);
+  //                 setNewPartyId(data.new_id);
+  //               } else {
+  //                 console.error('Failed to get new party ID:', data.message);
+  //                 setNewPartyId('PTY-001'); // Default fallback
+  //               }
+  //             } catch (error) {
+  //               console.error('Error fetching new party ID:', error);
+  //               setNewPartyId('PTY-001'); // Default fallback
+  //             }
+  //           } else {
+  //             console.warn('User ID not found in stored user data');
+  //             setNewPartyId('PTY-001'); // Default fallback
+  //           }
+  //         } else {
+  //           console.warn('No user data found in AsyncStorage');
+  //           // Alert.alert('Error', 'User session not found. Please login again.');
+  //           setNewPartyId('PTY-001'); // Default fallback
+  //         }
+  //       } catch (error) {
+  //         console.error('Error getting user from AsyncStorage:', error);
+  //         // Alert.alert('Error', 'Failed to load user data. Please login again.');
+  //         setNewPartyId('PTY-001'); // Default fallback
+  //       } finally {
+  //         setIsLoadingUser(false);
+  //       }
+  //     };
 
-    getUserFromStorage();
-  }, []);
+  //     // getUserFromStorage();
+  //   }, []);
 
   const validateForm = () => {
     const newErrors = {};
@@ -148,9 +127,9 @@ const AddPartyScreen = ({ navigation }) => {
       newErrors.gstNumber = 'GST number must be 15 characters';
     }
 
-    if (!formData.location.trim()) {
-      newErrors.location = 'Location is required';
-    }
+    // if (!formData.location.trim()) {
+    //   newErrors.location = 'Location is required';
+    // }
 
     if (!formData.business_name.trim()) {
       newErrors.business_name = 'Business name is required';
@@ -189,25 +168,24 @@ const AddPartyScreen = ({ navigation }) => {
       return;
     }
 
-    // Check if user ID is available
-    if (!formData.created_by) {
-      Alert.alert('Error', 'User session not found. Please login again.');
-      return;
-    }
-
     setIsLoading(true);
 
     try {
-      const apiUrl = `${API}parties`;
+      const apiUrl = `${API}parties/${formData.partyId}`;
 
-      // Prepare the data to send (excluding empty created_by if any issues)
+      // Prepare the data to send for update
       const requestData = {
-        ...formData,
-        created_by: parseInt(formData.created_by), // Ensure it's a number
+        name: formData.partyName,
+        gst: formData.gstNumber,
+        business_name: formData.business_name,
+        business_location: formData.business_location,
+        phone: formData.phoneNumber,
+        email: formData.email,
+        address: formData.address,
       };
-
+ 
       const response = await fetch(apiUrl, {
-        method: 'POST',
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           Accept: 'application/json',
@@ -240,7 +218,7 @@ const AddPartyScreen = ({ navigation }) => {
 
       Alert.alert(
         'Success!',
-        data.message || 'Party has been added successfully.',
+        data.message || 'Party has been updated successfully.',
         [
           {
             text: 'OK',
@@ -302,7 +280,7 @@ const AddPartyScreen = ({ navigation }) => {
         >
           <Icon name="close" size={24} color="#1F2937" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Add New Party</Text>
+        <Text style={styles.headerTitle}>Edit Party</Text>
         <View style={styles.placeholder} />
       </View>
 
@@ -361,7 +339,7 @@ const AddPartyScreen = ({ navigation }) => {
             )}
           </View>
 
-          <View style={styles.formGroup}>
+          {/* <View style={styles.formGroup}>
             <Text style={styles.formLabel}>
               Location <Text style={styles.required}>*</Text>
             </Text>
@@ -369,7 +347,7 @@ const AddPartyScreen = ({ navigation }) => {
             {errors.location && (
               <Text style={styles.errorText}>{errors.location}</Text>
             )}
-          </View>
+          </View> */}
 
           <View style={styles.formGroup}>
             <Text style={styles.formLabel}>
@@ -469,9 +447,7 @@ const AddPartyScreen = ({ navigation }) => {
           {isLoading ? (
             <ActivityIndicator size="small" color="white" />
           ) : (
-            <Text style={styles.savePartyButtonText}>
-              {isLoadingUser ? 'Loading...' : 'Save Party'}
-            </Text>
+            <Text style={styles.savePartyButtonText}>Update Party</Text>
           )}
         </TouchableOpacity>
       </View>
@@ -621,4 +597,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AddPartyScreen;
+export default EditPartyScreen;

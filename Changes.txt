@@ -44,3 +44,15 @@
    - Implemented loading indicators to improve user experience during data fetching.
    - Added error handling to ensure the app gracefully handles issues when fetching the next party ID.
 ==============================================================================================================
+10-08-2025 - Done by Harsh
+   - Change the project folder structure to improve organization and maintainability.
+   - Moved API-related files to a dedicated folder.
+   - Organized components into feature-based directories.
+   - Edit Party Screen:
+     - Added functionality to update party details.
+     - Implemented error handling for API requests.
+     - Improved user interface for better usability.
+   - Delete Party Using API
+     - Added functionality to delete a party.
+     - Implemented confirmation dialog before deletion.
+     - Improved error handling for delete requests.

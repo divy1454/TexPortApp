@@ -17,11 +17,12 @@ import ProfileScreen from './src/screens/ProfileScreen';
 // Modal screens
 // import VoiceCommandScreen from './src/screens/modals/VoiceCommandScreen';
 // import AIPredictionsScreen from './src/screens/modals/AIPredictionsScreen';
-import DuePaymentsScreen from './src/screens/modals/DuePaymentsScreen';
-import AddPartyScreen from './src/screens/modals/AddPartyScreen';
-import BillSortingScreen from './src/screens/modals/BillSortingScreen';
-import TransporterBookingScreen from './src/screens/modals/TransporterBookingScreen';
-import AttendanceScreen from './src/screens/modals/AttendanceScreen';
+import DuePaymentsScreen from './src/screens/payments/due-payments-screen';
+import AddPartyScreen from './src/screens/parties/add-party-screen';
+import EditPartyScreen from './src/screens/parties/edit-party-screen';
+import BillSortingScreen from './src/screens/yarn/bill-sorting-screen';
+import TransporterBookingScreen from './src/screens/yarn/transporter-booking-screen';
+import AttendanceScreen from './src/screens/staff/attendance-screen';
 
 //Auth Screens
 import WelcomeScreen from './src/screens/auth/WelcomeScreen';
@@ -100,6 +101,11 @@ const App = () => (
         <Stack.Screen 
           name="AddParty" 
           component={AddPartyScreen}
+          options={{ presentation: 'modal' }}
+        />
+        <Stack.Screen 
+          name="EditParty" 
+          component={EditPartyScreen}
           options={{ presentation: 'modal' }}
         />
         <Stack.Screen 

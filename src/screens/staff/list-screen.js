@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { View, ScrollView, Text, TouchableOpacity, StyleSheet, SafeAreaView, Alert, Modal, TextInput } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import StaffCard from '../../components/StaffCard';
-import Header from '../../components/Header';
-import DemoBanner from '../../components/DemoBanner';
-import { useDemoMode } from '../context/DemoContext';
-import StaffModal from './staff/staff-modal';
+import StaffCard from '../../../components/StaffCard';
+import Header from '../../../components/Header';
+import DemoBanner from '../../../components/DemoBanner';
+import { useDemoMode } from '../../context/DemoContext';
+import StaffModal from './staff-modal';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const StaffScreen = ({ navigation }) => {
