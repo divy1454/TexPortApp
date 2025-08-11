@@ -56,6 +56,28 @@ const StaffScreen = ({ navigation }) => {
     }
   ]);
 
+  // Demo fallback data
+  const staticStaff = [
+    {
+      id: 101,
+      name: 'Demo Staff 1',
+      role: 'Machine Operator',
+      machine: 'M-010',
+      hoursToday: 6.5,
+      hourlyRate: 120,
+      status: 'present'
+    },
+    {
+      id: 102,
+      name: 'Demo Staff 2',
+      role: 'Meter Calculator',
+      metersToday: 2000,
+      meterRate: 0.6,
+      status: 'present'
+    },
+    
+  ];
+
   // Modal state for Add/Edit
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMode, setModalMode] = useState('add'); // 'add' or 'edit'
@@ -70,6 +92,31 @@ const StaffScreen = ({ navigation }) => {
     meterRate: '',
     status: 'present',
   });
+  const [searchText, setSearchText] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Search filter
+  const filteredStaff = (demoMode ? staticStaff : staff).filter(worker => {
+    const searchLower = searchText.toLowerCase();
+    return (
+      (worker.name || '').toLowerCase().includes(searchLower) ||
+      (worker.role || '').toLowerCase().includes(searchLower)
+    );
+  });
+
+  // Refresh handler
+  const handleRefresh = () => {
+    setLoading(true);
+    setError(null);
+    // Simulate API call
+    setTimeout(() => {
+      if (!demoMode) {
+        setStaff([...staff]); // In real app, fetch from API
+      }
+      setLoading(false);
+    }, 1000);
+  };
 
   // Open Add Staff Modal
   const openAddModal = () => {
@@ -122,81 +169,64 @@ const StaffScreen = ({ navigation }) => {
     );
   };
 
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <Header navigation={navigation} />
+        <DemoBanner navigation={navigation} />
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loadingText}>Loading staff...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <Header navigation={navigation} />
       <DemoBanner navigation={navigation} />
       <ScrollView style={styles.content}>
-        {/* Header with Attendance Button */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Staff Management</Text>
-          <TouchableOpacity 
-            style={styles.attendanceButton} 
-            onPress={() => demoMode ? showDemoAlert() : navigation.navigate('Attendance')}
-          >
-            <Text style={styles.attendanceButtonText}>📝 Attendance</Text>
-          </TouchableOpacity>
+          <View style={styles.headerButtons}>
+            {!demoMode && (
+              <TouchableOpacity style={styles.refreshButton} onPress={handleRefresh}>
+                <Icon name="refresh" size={20} color="#6366F1" />
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity style={styles.attendanceButton} onPress={() => demoMode ? showDemoAlert() : navigation.navigate('Attendance')}>
+              <Text style={styles.attendanceButtonText}>📝 Attendance</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.addButton} onPress={openAddModal}>
+              <Text style={styles.addButtonText}>+ Add Staff</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
-        {/* Today's Summary */}
-        <LinearGradient
-          colors={['#3B82F6', '#6366F1']}
-          style={styles.summaryCard}
-        >
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-            <Text style={styles.summaryTitle}>📅 Today's Summary</Text>
+        {error && (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>⚠️ {error}</Text>
           </View>
-          <View style={styles.summaryStats}>
-            <View style={styles.summaryStatItem}>
-              <Text style={styles.summaryStatValue}>18</Text>
-              <Text style={styles.summaryStatLabel}>Present</Text>
-            </View>
-            <View style={styles.summaryStatItem}>
-              <Text style={styles.summaryStatValue}>3</Text>
-              <Text style={styles.summaryStatLabel}>Absent</Text>
-            </View>
-            <View style={styles.summaryStatItem}>
-              <Text style={styles.summaryStatValue}>3</Text>
-              <Text style={styles.summaryStatLabel}>Late</Text>
-            </View>
-          </View>
-        </LinearGradient>
+        )}
 
-        <LinearGradient
-          colors={['#F59E0B', '#FCD34D']}
-          style={styles.actionBar}
-        >
-          <View style={styles.actionBarRow}>
-            <TouchableOpacity style={styles.actionBarBtn} onPress={openAddModal}>
-              <Icon name="person-add" size={20} color="#fff" />
-              <Text style={styles.actionBarBtnText}>Add</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.actionBarBtn} onPress={() => staff.length > 0 && openEditModal(staff[0])}>
-              <Icon name="edit" size={20} color="#fff" />
-              <Text style={styles.actionBarBtnText}>Edit</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.actionBarBtn} onPress={() => staff.length > 0 && handleDeleteStaff(staff[0].id)}>
-              <Icon name="delete" size={20} color="#fff" />
-              <Text style={styles.actionBarBtnText}>Delete</Text>
-            </TouchableOpacity>
-          </View>
-        </LinearGradient>
+        {/* Search Bar */}
+        <View style={styles.searchContainer}>
+          <Icon name="search" size={20} color="#9CA3AF" style={styles.searchIcon} />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search staff by name or role..."
+            placeholderTextColor="#9CA3AF"
+            value={searchText}
+            onChangeText={setSearchText}
+          />
+        </View>
 
-        {/* Machine Operators */}
-        <Text style={styles.subsectionTitle}>🏭 Machine Operators (14 Machines)</Text>
-        {staff.filter(s => s.role === 'Machine Operator').map((worker) => (
-          <View key={worker.id} style={{ marginBottom: 8 }}>
-            <StaffCard worker={worker} />
-          </View>
-        ))}
-
-        {/* Meter Calculation Staff */}
-        <Text style={styles.subsectionTitle}>📏 Meter Calculation Staff</Text>
-        {staff.filter(s => s.role === 'Meter Calculator').map((worker) => (
-          <View key={worker.id} style={{ marginBottom: 8 }}>
-            <StaffCard worker={worker} />
-          </View>
-        ))}
+        {/* Staff List */}
+        <View style={styles.staffList}>
+          {filteredStaff.map(worker => (
+            <StaffCard key={worker.id} worker={worker} />
+          ))}
+        </View>
 
         {/* Modal for Add/Edit Staff */}
         <StaffModal

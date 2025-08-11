@@ -1,3 +1,5 @@
+import AddStaffScreen from './src/screens/staff/AddStaffScreen';
+import EditStaffScreen from './src/screens/staff/EditStaffScreen';
 // App.js - Main Navigation Setup
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
@@ -22,12 +24,13 @@ import AddPartyScreen from './src/screens/parties/add-party-screen';
 import EditPartyScreen from './src/screens/parties/edit-party-screen';
 import BillSortingScreen from './src/screens/yarn/bill-sorting-screen';
 import TransporterBookingScreen from './src/screens/yarn/transporter-booking-screen';
-import AttendanceScreen from './src/screens/staff/attendance-screen';
+// import AttendanceScreen from './src/screens/staff/attendance-screen';
+import StaffAttendanceScreen from './src/screens/staff/StaffAttendanceScreen';
 
-//Auth Screens
-import WelcomeScreen from './src/screens/auth/WelcomeScreen';
-import LoginScreen from './src/screens/auth/LoginScreen';
-import RegisterScreen from './src/screens/auth/RegisterScreen';
+//Auth Screens - Temporarily disabled
+// import WelcomeScreen from './src/screens/auth/WelcomeScreen';
+// import LoginScreen from './src/screens/auth/LoginScreen';
+// import RegisterScreen from './src/screens/auth/RegisterScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -78,11 +81,11 @@ const TabNavigator = () => (
 const App = () => (
   <DemoProvider>
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {/* Auth Screens */}
-        <Stack.Screen name="Welcome" component={WelcomeScreen} />
+      <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Main">
+        {/* Auth Screens - Temporarily disabled */}
+        {/* <Stack.Screen name="Welcome" component={WelcomeScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="Register" component={RegisterScreen} />
+        <Stack.Screen name="Register" component={RegisterScreen} /> */}
 
         {/* Main App Tabs */}
         <Stack.Screen name="Main" component={TabNavigator} />
@@ -118,9 +121,24 @@ const App = () => (
           component={TransporterBookingScreen}
           options={{ presentation: 'modal' }}
         />
-        <Stack.Screen 
+        {/* <Stack.Screen 
           name="Attendance" 
           component={AttendanceScreen}
+          options={{ presentation: 'modal' }}
+        /> */}
+        <Stack.Screen 
+          name="StaffAttendance" 
+          component={StaffAttendanceScreen}
+          options={{ presentation: 'modal' }}
+        />
+        <Stack.Screen 
+          name="AddStaff" 
+          component={AddStaffScreen}
+          options={{ presentation: 'modal' }}
+        />
+        <Stack.Screen 
+          name="EditStaff" 
+          component={EditStaffScreen}
           options={{ presentation: 'modal' }}
         />
         <Stack.Screen 

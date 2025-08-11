@@ -1,13 +1,29 @@
 import React from 'react';
-import { View, ScrollView, Text, TouchableOpacity, StyleSheet, SafeAreaView, Dimensions } from 'react-native';
+import { View, ScrollView, Text, TouchableOpacity, SafeAreaView, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Header from '../../components/Header';
 import DemoBanner from '../../components/DemoBanner';
-import MoreFeatureItem from '../../components/MoreFeatureItem';
 import ToolCard from '../../components/ToolCard';
 import { useDemoMode } from '../context/DemoContext';
+import styles from '../../components/Css/MoreScreen.styles';
 
 const { width } = Dimensions.get('window');
+
+// Local FeatureItem component (consolidated from MoreFeatureItem)
+const FeatureItem = ({ title, subtitle, buttonText, buttonColor, onPress }) => (
+  <View style={styles.moreFeatureItem}>
+    <View style={styles.moreFeatureInfo}>
+      <Text style={styles.moreFeatureTitle}>{title}</Text>
+      <Text style={styles.moreFeatureSubtitle}>{subtitle}</Text>
+    </View>
+    <TouchableOpacity 
+      style={[styles.moreFeatureButton, { backgroundColor: buttonColor }]}
+      onPress={onPress}
+    >
+      <Text style={styles.moreFeatureButtonText}>{buttonText}</Text>
+    </TouchableOpacity>
+  </View>
+);
 
 const MoreScreen = ({ navigation }) => {
   const { demoMode, showDemoAlert, disableDemoMode } = useDemoMode();
@@ -49,20 +65,20 @@ const MoreScreen = ({ navigation }) => {
         <View style={styles.moreCard}>
           <Text style={styles.moreCardTitle}>🚛 Yaan & Transportation</Text>
           <View style={styles.moreCardContent}>
-            <MoreFeatureItem
+            <FeatureItem
               title="Purchase Reminders"
               subtitle="5 pending reminders"
               buttonText="View"
               buttonColor="#F59E0B"
             />
-            <MoreFeatureItem
+            <FeatureItem
               title="Book Transporter"
               subtitle="Truck booking plugin"
               buttonText="Book"
               buttonColor="#10B981"
               onPress={() => handleNavigateWithDemoCheck('TransporterBooking')}
             />
-            <MoreFeatureItem
+            <FeatureItem
               title="Other Costs"
               subtitle="Monthly expenses"
               buttonText="₹45,600"
@@ -102,106 +118,5 @@ const MoreScreen = ({ navigation }) => {
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F3F4F6',
-  },
-  content: {
-    flex: 1,
-    padding: 16,
-  },
-  demoCard: {
-    backgroundColor: '#FEF3C7',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 24,
-    borderWidth: 1,
-    borderColor: '#F59E0B',
-  },
-  demoCardTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#92400E',
-    marginBottom: 8,
-  },
-  demoCardText: {
-    fontSize: 14,
-    color: '#92400E',
-    marginBottom: 12,
-    lineHeight: 20,
-  },
-  exitDemoButton: {
-    backgroundColor: '#F59E0B',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 8,
-    alignSelf: 'flex-start',
-  },
-  exitDemoButtonText: {
-    color: 'white',
-    fontWeight: '600',
-    fontSize: 14,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#1F2937',
-    marginBottom: 24,
-  },
-  moreCard: {
-    backgroundColor: 'white',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  moreCardTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#1F2937',
-    marginBottom: 16,
-  },
-  moreCardContent: {
-    gap: 12,
-  },
-  aiCard: {
-    borderRadius: 16,
-    padding: 24,
-    marginBottom: 24,
-  },
-  aiCardTitle: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 16,
-  },
-  aiFeatureButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 12,
-  },
-  aiFeatureTitle: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 4,
-  },
-  aiFeatureSubtitle: {
-    color: 'rgba(255, 255, 255, 0.9)',
-    fontSize: 14,
-  },
-  toolsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 16,
-  },
-});
 
 export default MoreScreen;

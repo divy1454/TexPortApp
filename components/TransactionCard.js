@@ -1,155 +1,123 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, Alert } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import styles from './Css/TransactionCard.styles';
 import { useDemoMode } from '../src/context/DemoContext';
 
 const TransactionCard = ({ transaction, navigation }) => {
   const { demoMode, showDemoAlert } = useDemoMode();
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'paid': return '#10B981';
-      case 'overdue': return '#EF4444';
-      case 'pending': return '#F59E0B';
-      default: return '#6B7280';
+  
+  const getPaymentTypeColor = (paymentType) => {
+    return paymentType === 'received' ? '#10B981' : '#EF4444';
+  };
+
+  const getPaymentModeIcon = (paymentMode) => {
+    switch (paymentMode) {
+      case 'cash': return 'money';
+      case 'cheque': return 'receipt';
+      case 'online': return 'payment';
+      default: return 'payment';
     }
   };
 
-  const getStatusText = (transaction) => {
-    switch (transaction.status) {
-      case 'paid': return '✓ Paid';
-      case 'overdue': return `⏰ ${transaction.overdueDays} days overdue`;
-      case 'pending': return '⏳ Pending';
-      default: return '';
-    }
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-IN', { 
+      day: '2-digit', 
+      month: 'short', 
+      year: 'numeric' 
+    });
+  };
+
+  const formatAmount = (amount) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
   };
 
   return (
-    <View style={[styles.transactionCard, { borderLeftColor: getStatusColor(transaction.status) }]}>
+    <View style={[styles.transactionCard, { 
+      borderLeftColor: getPaymentTypeColor(transaction.payment_type) 
+    }]}>
       <View style={styles.transactionHeader}>
-        <View>
-          <Text style={styles.transactionCompany}>{transaction.company}</Text>
-          <Text style={styles.transactionDetails}>Invoice #{transaction.invoice} • {transaction.date}</Text>
+        <View style={styles.transactionLeft}>
+          <Text style={styles.transactionCompany}>{transaction.party_name}</Text>
+          <Text style={styles.transactionDetails}>
+            {formatDate(transaction.payment_date)} • ID: #{transaction.id}
+          </Text>
         </View>
         <View style={styles.transactionRight}>
-          <Text style={[styles.transactionAmount, { color: getStatusColor(transaction.status) }]}>
-            ₹{transaction.amount.toLocaleString()}
+          <Text style={[styles.transactionAmount, { 
+            color: getPaymentTypeColor(transaction.payment_type) 
+          }]}>
+            {transaction.payment_type === 'given' ? '-' : '+'}{formatAmount(transaction.amount)}
           </Text>
-          <View style={[styles.statusBadge, { backgroundColor: getStatusColor(transaction.status) + '20' }]}>
-            <Text style={[styles.statusBadgeText, { color: getStatusColor(transaction.status) }]}>
-              {getStatusText(transaction)}
+          <View style={[styles.statusBadge, { 
+            backgroundColor: getPaymentTypeColor(transaction.payment_type) + '20' 
+          }]}>
+            <Text style={[styles.statusBadgeText, { 
+              color: getPaymentTypeColor(transaction.payment_type) 
+            }]}>
+              {transaction.payment_type === 'received' ? '↓ Received' : '↑ Given'}
             </Text>
           </View>
         </View>
       </View>
+      
+      <View style={styles.transactionBody}>
+        <View style={styles.paymentModeContainer}>
+          <Icon 
+            name={getPaymentModeIcon(transaction.payment_mode)} 
+            size={16} 
+            color="#6B7280" 
+          />
+          <Text style={styles.paymentModeText}>
+            {transaction.payment_mode.charAt(0).toUpperCase() + transaction.payment_mode.slice(1)}
+          </Text>
+        </View>
+        
+        {transaction.remarks && (
+          <Text style={styles.remarksText} numberOfLines={2}>
+            {transaction.remarks}
+          </Text>
+        )}
+      </View>
+      
       <View style={styles.transactionFooter}>
-        <Text style={styles.transactionPaymentMethod}>
-          {transaction.status === 'overdue' ? `Penalty: +₹${transaction.penalty}` : transaction.paymentMethod}
-        </Text>
-        {transaction.status === 'overdue' && (
+        <View style={styles.footerLeft}>
+          <Text style={styles.transactionId}>Party ID: {transaction.party_id}</Text>
+        </View>
+        <View style={styles.footerRight}>
+          {transaction.proof_url ? (
+            <TouchableOpacity 
+              style={styles.proofButton}
+              onPress={() => demoMode && showDemoAlert()}
+            >
+              <Icon name="attach-file" size={16} color="#6366F1" />
+              <Text style={styles.proofButtonText}>View Proof</Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity 
+              style={styles.addProofButton}
+              onPress={() => demoMode && showDemoAlert()}
+            >
+              <Icon name="add-photo-alternate" size={16} color="#9CA3AF" />
+              <Text style={styles.addProofButtonText}>Add Proof</Text>
+            </TouchableOpacity>
+          )}
           <TouchableOpacity 
-            style={styles.reminderButton}
+            style={styles.editButton}
             onPress={() => demoMode && showDemoAlert()}
           >
-            <Text style={styles.reminderButtonText}>Send Reminder</Text>
+            <Icon name="edit" size={16} color="#6366F1" />
           </TouchableOpacity>
-        )}
-        {transaction.status === 'pending' && (
-          <TouchableOpacity 
-            style={styles.payButton}
-            onPress={() => demoMode && showDemoAlert()}
-          >
-            <Text style={styles.payButtonText}>Pay Now</Text>
-          </TouchableOpacity>
-        )}
-        {transaction.status === 'paid' && (
-          <TouchableOpacity onPress={() => demoMode && showDemoAlert()}>
-            <Text style={styles.viewProofText}>View Proof</Text>
-          </TouchableOpacity>
-        )}
+        </View>
       </View>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  transactionCard: {
-    backgroundColor: 'white',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 16,
-    borderLeftWidth: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  transactionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 12,
-  },
-  transactionCompany: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#1F2937',
-  },
-  transactionDetails: {
-    fontSize: 14,
-    color: '#6B7280',
-  },
-  transactionRight: {
-    alignItems: 'flex-end',
-  },
-  transactionAmount: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 20,
-    marginTop: 4,
-  },
-  statusBadgeText: {
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  transactionFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  transactionPaymentMethod: {
-    fontSize: 14,
-    color: '#6B7280',
-  },
-  reminderButton: {
-    backgroundColor: '#EF4444',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 12,
-  },
-  reminderButtonText: {
-    color: 'white',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  payButton: {
-    backgroundColor: '#6366F1',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 12,
-  },
-  payButtonText: {
-    color: 'white',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  viewProofText: {
-    color: '#6366F1',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-});
 
 export default TransactionCard;

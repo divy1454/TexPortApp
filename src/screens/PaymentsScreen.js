@@ -1,52 +1,113 @@
-import React from 'react';
-import { View, ScrollView, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, ScrollView, Text, TouchableOpacity, SafeAreaView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import TransactionCard from '../../components/TransactionCard';
 import Header from '../../components/Header';
 import DemoBanner from '../../components/DemoBanner';
 import { useDemoMode } from '../context/DemoContext';
 import { demoPayments, demoPaymentStats } from '../data/demoPayments';
+import styles from '../../components/Css/PaymentsScreen.styles';
 
 const PaymentsScreen = ({ navigation }) => {
   const { demoMode, showDemoAlert } = useDemoMode();
+  const [filterType, setFilterType] = useState('all'); // 'all', 'given', 'received'
 
+  // Updated transaction data based on your database structure
   const transactions = [
     {
       id: 1,
-      company: 'Rajesh Cotton Mills',
-      invoice: 'TX-2024-156',
-      date: 'Jan 20',
-      amount: 45000,
-      status: 'paid',
-      paymentMethod: 'UPI Payment'
+      party_id: 101,
+      party_name: 'Rajesh Cotton Mills',
+      payment_type: 'received',
+      amount: 45000.00,
+      payment_mode: 'online',
+      payment_date: '2025-01-20',
+      proof_url: 'proof_001.jpg',
+      remarks: 'Payment for cotton supply order #CS-2024-156',
+      created_at: '2025-01-20 10:30:00'
     },
     {
       id: 2,
-      company: 'Mumbai Silk House',
-      invoice: 'TX-2024-142',
-      date: 'Jan 15',
-      amount: 78500,
-      status: 'overdue',
-      overdueDays: 5,
-      penalty: 1570
+      party_id: 102,
+      party_name: 'Mumbai Silk House',
+      payment_type: 'given',
+      amount: 78500.00,
+      payment_mode: 'cheque',
+      payment_date: '2025-01-15',
+      proof_url: null,
+      remarks: 'Advance payment for silk fabric order',
+      created_at: '2025-01-15 14:22:00'
     },
     {
       id: 3,
-      company: 'Gujarat Textiles Ltd',
-      invoice: 'TX-2024-138',
-      date: 'Jan 25',
-      amount: 125000,
-      status: 'pending',
-      dueInDays: 5
+      party_id: 103,
+      party_name: 'Gujarat Textiles Ltd',
+      payment_type: 'received',
+      amount: 125000.00,
+      payment_mode: 'cash',
+      payment_date: '2025-01-25',
+      proof_url: 'proof_003.jpg',
+      remarks: 'Final payment for textile machinery purchase',
+      created_at: '2025-01-25 16:45:00'
+    },
+    {
+      id: 4,
+      party_id: 104,
+      party_name: 'Delhi Fashion Hub',
+      payment_type: 'given',
+      amount: 56200.00,
+      payment_mode: 'online',
+      payment_date: '2025-01-18',
+      proof_url: 'proof_004.jpg',
+      remarks: 'Payment for designer fabric collection',
+      created_at: '2025-01-18 11:15:00'
+    },
+    {
+      id: 5,
+      party_id: 105,
+      party_name: 'Chennai Weaving Co.',
+      payment_type: 'received',
+      amount: 89300.00,
+      payment_mode: 'cheque',
+      payment_date: '2025-01-22',
+      proof_url: null,
+      remarks: 'Monthly weaving contract payment',
+      created_at: '2025-01-22 09:30:00'
     }
   ];
 
   // Get current data based on demo mode
   const currentTransactions = demoMode ? demoPayments : transactions;
+  
+  // Filter transactions based on payment type
+  const filteredTransactions = currentTransactions.filter(transaction => {
+    if (filterType === 'all') return true;
+    return transaction.payment_type === filterType;
+  });
+
+  // Calculate stats
+  const totalReceived = currentTransactions
+    .filter(t => t.payment_type === 'received')
+    .reduce((sum, t) => sum + t.amount, 0);
+  
+  const totalGiven = currentTransactions
+    .filter(t => t.payment_type === 'given')
+    .reduce((sum, t) => sum + t.amount, 0);
+
   const currentStats = demoMode ? demoPaymentStats : {
-    totalOverdue: 245000,
-    overdueCount: 12,
-    penalty: 12500
+    totalReceived,
+    totalGiven,
+    netBalance: totalReceived - totalGiven,
+    transactionCount: currentTransactions.length
+  };
+
+  const handleAddPaymentPress = () => {
+    if (demoMode) {
+      showDemoAlert();
+      return;
+    }
+    navigation.navigate('AddPayment');
   };
 
   const handleDuePaymentsPress = () => {
@@ -70,161 +131,97 @@ const PaymentsScreen = ({ navigation }) => {
       <Header navigation={navigation} />
       <DemoBanner navigation={navigation} />
       <ScrollView style={styles.content}>
-        {/* Due Payment Alert */}
+        {/* Payment Summary Card */}
         <LinearGradient
-          colors={['#ef4444', '#ec4899']}
+          colors={['#6366F1', '#8B5CF6']}
           style={styles.alertCard}
         >
           <View style={styles.alertHeader}>
-            <Text style={styles.alertTitle}>⚠️ Payment Alerts</Text>
-            <View style={styles.alertBadge}>
-              <Text style={styles.alertBadgeText}>{currentStats.overdueCount} Due</Text>
+            <Text style={styles.alertTitle}>💰 Payment Summary</Text>
+            <TouchableOpacity 
+              style={styles.alertBadge}
+              onPress={handleAddPaymentPress}
+            >
+              <Icon name="add" size={16} color="white" />
+              <Text style={styles.alertBadgeText}>Add Payment</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.summaryRow}>
+            <View style={styles.summaryItem}>
+              <Text style={styles.summaryLabel}>Received</Text>
+              <Text style={styles.summaryValue}>₹{(currentStats.totalReceived / 1000).toFixed(0)}K</Text>
+            </View>
+            <View style={styles.summaryItem}>
+              <Text style={styles.summaryLabel}>Given</Text>
+              <Text style={styles.summaryValue}>₹{(currentStats.totalGiven / 1000).toFixed(0)}K</Text>
+            </View>
+            <View style={styles.summaryItem}>
+              <Text style={styles.summaryLabel}>Net Balance</Text>
+              <Text style={[styles.summaryValue, { 
+                color: currentStats.netBalance >= 0 ? '#10B981' : '#EF4444' 
+              }]}>
+                ₹{(Math.abs(currentStats.netBalance) / 1000).toFixed(0)}K
+              </Text>
             </View>
           </View>
-          <Text style={styles.alertSubtext}>Total overdue: ₹{(currentStats.totalOverdue / 1000).toFixed(0)}K + ₹{(currentStats.penalty / 1000).toFixed(1)}K penalty</Text>
-          <TouchableOpacity 
-            style={styles.alertButton} 
-            onPress={handleDuePaymentsPress}
-          >
-            <Text style={styles.alertButtonText}>View All Due Payments</Text>
-          </TouchableOpacity>
         </LinearGradient>
+
+        {/* Filter Buttons */}
+        <View style={styles.filterContainer}>
+          <TouchableOpacity 
+            style={[styles.filterButton, filterType === 'all' && styles.filterButtonActive]}
+            onPress={() => setFilterType('all')}
+          >
+            <Text style={[styles.filterButtonText, filterType === 'all' && styles.filterButtonTextActive]}>
+              All ({currentTransactions.length})
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={[styles.filterButton, filterType === 'received' && styles.filterButtonActive]}
+            onPress={() => setFilterType('received')}
+          >
+            <Text style={[styles.filterButtonText, filterType === 'received' && styles.filterButtonTextActive]}>
+              ↓ Received ({currentTransactions.filter(t => t.payment_type === 'received').length})
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={[styles.filterButton, filterType === 'given' && styles.filterButtonActive]}
+            onPress={() => setFilterType('given')}
+          >
+            <Text style={[styles.filterButtonText, filterType === 'given' && styles.filterButtonTextActive]}>
+              ↑ Given ({currentTransactions.filter(t => t.payment_type === 'given').length})
+            </Text>
+          </TouchableOpacity>
+        </View>
 
         {/* Section Header */}
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Recent Transactions</Text>
+          <Text style={styles.sectionTitle}>Payment Transactions</Text>
           <TouchableOpacity 
             style={styles.sortButton} 
             onPress={handleBillSortingPress}
           >
-            <Text style={styles.sortButtonText}>📊 Sort Bills</Text>
+            <Text style={styles.sortButtonText}>📊 Sort</Text>
           </TouchableOpacity>
         </View>
 
         {/* Transaction List */}
-        {currentTransactions.map((transaction) => (
-          <TransactionCard
-            key={transaction.id}
-            transaction={transaction}
-            navigation={navigation}
-          />
-        ))}
+        {filteredTransactions.length > 0 ? (
+          filteredTransactions.map((transaction) => (
+            <TransactionCard
+              key={transaction.id}
+              transaction={transaction}
+              navigation={navigation}
+            />
+          ))
+        ) : (
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>No {filterType === 'all' ? '' : filterType} payments found</Text>
+          </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F3F4F6',
-    paddingTop: 0,
-  },
-  content: {
-    flex: 1,
-    padding: 16,
-    paddingBottom: 100,
-  },
-  screenHeader: {
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    backgroundColor: 'white',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
-  },
-  screenTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#1F2937',
-  },
-  alertCard: {
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 24,
-  },
-  alertHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  alertTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: 'white',
-  },
-  alertBadge: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 20,
-  },
-  alertBadgeText: {
-    color: 'white',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  alertSubtext: {
-    color: 'rgba(255, 255, 255, 0.9)',
-    fontSize: 14,
-    marginBottom: 12,
-  },
-  alertButton: {
-    backgroundColor: 'white',
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 12,
-    alignSelf: 'flex-start',
-  },
-  alertButtonText: {
-    color: '#EF4444',
-    fontWeight: '600',
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#1F2937',
-  },
-  sortButton: {
-    backgroundColor: '#DBEAFE',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 12,
-  },
-  sortButtonText: {
-    color: '#2563EB',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  floatingVoiceButton: {
-    position: 'absolute',
-    bottom: 120,
-    right: 20,
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
-  },
-  floatingVoiceGradient: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  micIcon: {
-    fontSize: 32,
-  },
-});
 
 export default PaymentsScreen;
