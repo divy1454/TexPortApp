@@ -18,9 +18,14 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   staffName: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
     color: '#1F2937',
+  },
+  staffId: {
+    fontSize: 12,
+    color: '#6B7280',
+    marginTop: 2,
   },
   staffRole: {
     fontSize: 14,
@@ -28,6 +33,11 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   staffMachine: {
+    fontSize: 12,
+    color: '#6366F1',
+    marginTop: 2,
+  },
+  staffContact: {
     fontSize: 12,
     color: '#6366F1',
     marginTop: 2,
@@ -46,7 +56,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   staffEarnings: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#10B981',
   },
@@ -54,9 +64,27 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#6B7280',
   },
+  staffSalary: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#10B981',
+  },
+  staffSalaryLabel: {
+    fontSize: 12,
+    color: '#6B7280',
+  },
+  staffDetails: {
+    marginBottom: 12,
+  },
+  staffEmail: {
+    fontSize: 14,
+    color: '#6B7280',
+    marginTop: 4,
+  },
   staffStats: {
     flexDirection: 'row',
     gap: 24,
+    marginBottom: 12,
   },
   staffStat: {
     alignItems: 'center',
@@ -75,23 +103,24 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  staffShift: {
+  staffStatus: {
     fontSize: 14,
     color: '#6B7280',
+    fontFamily: 'monospace',
   },
   staffActions: {
     flexDirection: 'row',
+    gap: 8,
   },
   staffActionButton: {
-    backgroundColor: '#6366F1',
+    backgroundColor: '#F3F4F6',
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 8,
-    marginLeft: 8,
+    borderRadius: 12,
   },
-  staffActionText: {
-    color: 'white',
-    fontSize: 12,
+  staffActionButtonText: {
+    color: '#6366F1',
+    fontSize: 16,
     fontWeight: '600',
   },
 });

@@ -82,6 +82,13 @@ const styles = StyleSheet.create({
     color: '#6B7280',
     fontSize: 16,
     fontStyle: 'italic',
+    marginTop: 12,
+  },
+  emptyListSubtext: {
+    color: '#9CA3AF',
+    fontSize: 14,
+    marginTop: 8,
+    textAlign: 'center',
   },
   cardActionsRow: {
     flexDirection: 'row',
