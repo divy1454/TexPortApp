@@ -120,3 +120,170 @@ const MoreScreen = ({ navigation }) => {
 };
 
 export default MoreScreen;
+
+
+
+// =================================================================================================
+// ❌❌❌❌❌❌❌ This code is use for the feature don't remove this code ❌❌❌❌❌❌❌
+// =================================================================================================
+// import React, { useMemo } from 'react';
+// import {
+//   View,
+//   Text,
+//   TextInput,
+//   Button,
+//   FlatList,
+//   StyleSheet,
+// } from 'react-native';
+// import { useForm, Controller, useFieldArray } from 'react-hook-form';
+// import { Picker } from '@react-native-picker/picker';
+
+// export default function CreateOrderScreen() {
+//   const { control, handleSubmit, watch, setValue } = useForm({
+//     defaultValues: {
+//       partyName: '',
+//       items: [{ productName: '', qty: '', price: '' }],
+//     },
+//   });
+
+//   const { fields, append, remove } = useFieldArray({
+//     control,
+//     name: 'items',
+//   });
+
+//   // Example product list
+//   const products = [
+//     { name: 'Cotton', price: 50 },
+//     { name: 'Silk', price: 100 },
+//     { name: 'Wool', price: 80 },
+//   ];
+
+//   const items = watch('items');
+
+//   // Calculate subtotal
+//   const subtotal = useMemo(() => {
+//     return items.reduce((sum, item) => {
+//       const qty = parseFloat(item.qty) || 0;
+//       const price = parseFloat(item.price) || 0;
+//       return sum + qty * price;
+//     }, 0);
+//   }, [items]);
+
+//   const onSubmit = data => {
+//     console.log('Final Order:', data);
+//   };
+
+//   return (
+//     <View style={styles.container}>
+//       <Text style={styles.header}>Create Order</Text>
+
+//       {/* Party Name */}
+//       <Text style={styles.label}>Party Name</Text>
+//       <Controller
+//         control={control}
+//         name="partyName"
+//         render={({ field: { onChange, value } }) => (
+//           <TextInput
+//             style={styles.input}
+//             placeholder="Enter Party Name"
+//             value={value}
+//             onChangeText={onChange}
+//           />
+//         )}
+//       />
+
+//       <Text style={styles.subHeader}>Order Items</Text>
+//       <FlatList
+//         data={fields}
+//         keyExtractor={item => item.id}
+//         renderItem={({ item, index }) => (
+//           <View style={styles.itemRow}>
+//             {/* Product Dropdown */}
+//             <Controller
+//               control={control}
+//               name={`items.${index}.productName`}
+//               render={({ field: { value } }) => (
+//                 <Picker
+//                   selectedValue={value}
+//                   style={[styles.input, { flex: 1 }]}
+//                   onValueChange={selected => {
+//                     const product = products.find(p => p.name === selected);
+//                     setValue(`items.${index}.productName`, selected);
+//                     if (product) {
+//                       setValue(`items.${index}.price`, String(product.price));
+//                       setValue(`items.${index}.qty`, '1');
+//                     }
+//                   }}
+//                 >
+//                   <Picker.Item label="Select Product" value="" />
+//                   {products.map((p, i) => (
+//                     <Picker.Item key={i} label={p.name} value={p.name} />
+//                   ))}
+//                 </Picker>
+//               )}
+//             />
+
+//             {/* Qty */}
+//             <Controller
+//               control={control}
+//               name={`items.${index}.qty`}
+//               render={({ field: { onChange, value } }) => (
+//                 <TextInput
+//                   style={styles.input}
+//                   placeholder="Qty"
+//                   keyboardType="numeric"
+//                   value={value}
+//                   onChangeText={onChange}
+//                 />
+//               )}
+//             />
+
+//             {/* Price */}
+//             <Controller
+//               control={control}
+//               name={`items.${index}.price`}
+//               render={({ field: { onChange, value } }) => (
+//                 <TextInput
+//                   style={styles.input}
+//                   placeholder="Price"
+//                   keyboardType="numeric"
+//                   value={value}
+//                   onChangeText={onChange}
+//                 />
+//               )}
+//             />
+
+//             <Button title="❌" onPress={() => remove(index)} />
+//           </View>
+//         )}
+//       />
+
+//       <Button
+//         title="➕ Add Item"
+//         onPress={() => append({ productName: '', qty: '', price: '' })}
+//       />
+
+//       {/* Subtotal */}
+//       <Text style={styles.subtotal}>Subtotal: ₹{subtotal.toFixed(2)}</Text>
+
+//       {/* Submit */}
+//       <Button title="Save Order" onPress={handleSubmit(onSubmit)} />
+//     </View>
+//   );
+// }
+
+// const styles = StyleSheet.create({
+//   container: { flex: 1, padding: 16, backgroundColor: '#fff' },
+//   header: { fontSize: 22, fontWeight: 'bold', marginBottom: 12 },
+//   subHeader: { fontSize: 18, fontWeight: '600', marginVertical: 10 },
+//   label: { fontSize: 16, fontWeight: '500' },
+//   input: {
+//     borderWidth: 1,
+//     borderColor: '#ccc',
+//     padding: 8,
+//     marginVertical: 5,
+//     borderRadius: 6,
+//   },
+//   itemRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
+//   subtotal: { fontSize: 18, fontWeight: 'bold', marginVertical: 12 },
+// });
