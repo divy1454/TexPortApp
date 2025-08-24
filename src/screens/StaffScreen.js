@@ -1,6 +1,13 @@
-  
-import React, { useState, useEffect } from 'react';
-import { View, ScrollView, Text, TouchableOpacity, SafeAreaView, TextInput, RefreshControl } from 'react-native';
+import React, { useState, useEffect, use } from 'react';
+import {
+  View,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  SafeAreaView,
+  TextInput,
+  RefreshControl,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Header from '../../components/Header';
 import DemoBanner from '../../components/DemoBanner';
@@ -9,15 +16,26 @@ import styles from '../../components/Css/StaffScreen.styles';
 import StaffCard from '../../components/StaffCard';
 import AddStaffModal from '../../components/AddStaffModal';
 import API from '../../config/apiConfig';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const StaffScreen = ({ navigation }) => {
   const { demoMode, showDemoAlert } = useDemoMode();
   const [staff, setStaff] = useState([]);
+  const [attendanceSummary, setAttendanceSummary] = useState({
+    total_staff: 0,
+    present_count: 0,
+    absent_count: 0,
+    not_marked_count: 0,
+    attendance_percentage: 0
+  });
   const [searchText, setSearchText] = useState('');
   const [loading, setLoading] = useState(false);
+  const [summaryLoading, setSummaryLoading] = useState(false);
   const [error, setError] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
+
+  const [userId, setUserId] = useState(0);
 
   // Demo fallback data
   const staticStaff = [
@@ -29,7 +47,7 @@ const StaffScreen = ({ navigation }) => {
       email: 'demo1@company.com',
       salary_type: 'hourly',
       salary_amount: 120,
-      status: 'active'
+      status: 'active',
     },
     {
       id: 102,
@@ -39,19 +57,19 @@ const StaffScreen = ({ navigation }) => {
       email: 'demo2@company.com',
       salary_type: 'monthly',
       salary_amount: 25000,
-      status: 'active'
-    }
+      status: 'active',
+    },
   ];
 
   // Fetch staff data from API
   const fetchStaff = async () => {
     if (demoMode) return;
-    
+
     setLoading(true);
     setError(null);
-    
+
     try {
-      const response = await fetch(`${API}staff`, {
+      const response = await fetch(`${API}staff/${userId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -73,7 +91,7 @@ const StaffScreen = ({ navigation }) => {
       } else if (data.data && Array.isArray(data.data)) {
         staffArray = data.data;
       }
-      
+
       setStaff(staffArray);
     } catch (error) {
       console.error('Error fetching staff:', error);
@@ -83,27 +101,97 @@ const StaffScreen = ({ navigation }) => {
     }
   };
 
+  // Fetch attendance summary from API
+  const fetchAttendanceSummary = async () => {
+    if (demoMode) {
+      // Set demo data for attendance summary
+      setAttendanceSummary({
+        total_staff: staticStaff.length,
+        present_count: staticStaff.filter(s => s.status === 'active').length,
+        absent_count: staticStaff.filter(s => s.status === 'inactive').length,
+        not_marked_count: 0,
+        attendance_percentage: 100
+      });
+      return;
+    }
+
+    setSummaryLoading(true);
+
+    try {
+      const response = await fetch(`${API}staff/attendance-summary/${userId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (data.success && data.data) {
+        setAttendanceSummary(data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching attendance summary:', error);
+      // Set default values on error
+      setAttendanceSummary({
+        total_staff: staff.length,
+        present_count: 0,
+        absent_count: 0,
+        not_marked_count: staff.length,
+        attendance_percentage: 0
+      });
+    } finally {
+      setSummaryLoading(false);
+    }
+  };
+
   // Load data on component mount
   useEffect(() => {
-    fetchStaff();
+    userIdGet();
+  }, []);
+
+  useEffect(() => {
+    if (userId) {
+      fetchStaff();
+      fetchAttendanceSummary();
+    }
+  }, [userId]);
+
+  useEffect(() => {
+    if (demoMode) {
+      setStaff(staticStaff);
+      fetchAttendanceSummary(); // This will set demo data
+    }
   }, [demoMode]);
 
+  const userIdGet = async () => {
+    const userString = await AsyncStorage.getItem('user');
+    const user = JSON.parse(userString);
+    setUserId(user.id || 0);
+  };
+
   // Handle staff deletion
-  const handleStaffDeleted = (deletedStaffId) => {
-    setStaff(prevStaff => prevStaff.filter(staff => staff.id !== deletedStaffId));
+  const handleStaffDeleted = deletedStaffId => {
+    setStaff(prevStaff =>
+      prevStaff.filter(staff => staff.id !== deletedStaffId),
+    );
   };
 
   // Handle staff update
-  const handleStaffUpdated = (updatedStaff) => {
-    setStaff(prevStaff => 
-      prevStaff.map(staff => 
-        staff.id === updatedStaff.id ? { ...staff, ...updatedStaff } : staff
-      )
+  const handleStaffUpdated = updatedStaff => {
+    setStaff(prevStaff =>
+      prevStaff.map(staff =>
+        staff.id === updatedStaff.id ? { ...staff, ...updatedStaff } : staff,
+      ),
     );
   };
 
   // Handle staff addition
-  const handleStaffAdded = (newStaff) => {
+  const handleStaffAdded = newStaff => {
     setStaff(prevStaff => [...prevStaff, newStaff]);
   };
 
@@ -112,7 +200,9 @@ const StaffScreen = ({ navigation }) => {
     const searchLower = searchText.toLowerCase();
     return (
       (worker.name || '').toLowerCase().includes(searchLower) ||
-      (worker.designation || worker.role || '').toLowerCase().includes(searchLower) ||
+      (worker.designation || worker.role || '')
+        .toLowerCase()
+        .includes(searchLower) ||
       (worker.phone || '').toLowerCase().includes(searchLower) ||
       (worker.email || '').toLowerCase().includes(searchLower)
     );
@@ -124,9 +214,9 @@ const StaffScreen = ({ navigation }) => {
       showDemoAlert();
       return;
     }
-    
+
     setRefreshing(true);
-    await fetchStaff();
+    await Promise.all([fetchStaff(), fetchAttendanceSummary()]);
     setRefreshing(false);
   };
 
@@ -155,7 +245,7 @@ const StaffScreen = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       <Header navigation={navigation} />
       <DemoBanner navigation={navigation} />
-      <ScrollView 
+      <ScrollView
         style={styles.content}
         refreshControl={
           <RefreshControl
@@ -170,7 +260,10 @@ const StaffScreen = ({ navigation }) => {
           <Text style={styles.sectionTitle}>Staff Management</Text>
           <View style={styles.headerButtons}>
             {!demoMode && (
-              <TouchableOpacity style={styles.refreshButton} onPress={handleRefresh}>
+              <TouchableOpacity
+                style={styles.refreshButton}
+                onPress={handleRefresh}
+              >
                 <Icon name="refresh" size={20} color="#6366F1" />
               </TouchableOpacity>
             )}
@@ -188,22 +281,36 @@ const StaffScreen = ({ navigation }) => {
 
         {/* Search Bar */}
         <View style={styles.searchContainer}>
-          <Icon name="search" size={20} color="#9CA3AF" style={styles.searchIcon} />
+          <Icon
+            name="search"
+            size={20}
+            color="#9CA3AF"
+            style={styles.searchIcon}
+          />
           <TextInput
             style={styles.searchInput}
-            placeholder="Search staff by name, designation, phone, or email..."
+            placeholder="Search staff..."
             placeholderTextColor="#9CA3AF"
             value={searchText}
             onChangeText={setSearchText}
           />
         </View>
 
-        {/* Attendance Card */}
-        <View style={styles.attendanceCard}>
-          <View style={styles.attendanceCardHeader}>
-            <Text style={styles.attendanceTitle}>Staff Summary</Text>
-            <TouchableOpacity 
-              style={styles.attendanceButton} 
+        {/* Attendance Summary Card */}
+        <View style={styles.attendanceSummaryCard}>
+          <View style={styles.attendanceSummaryHeader}>
+            <View>
+              <Text style={styles.attendanceSummaryTitle}>Today's Attendance</Text>
+              <Text style={styles.attendanceSummaryDate}>
+                {new Date().toLocaleDateString('en-IN', { 
+                  day: '2-digit', 
+                  month: 'short', 
+                  year: 'numeric' 
+                })}
+              </Text>
+            </View>
+            <TouchableOpacity
+              style={styles.markAttendanceButton}
               onPress={() => {
                 if (demoMode) {
                   showDemoAlert();
@@ -212,30 +319,62 @@ const StaffScreen = ({ navigation }) => {
                 }
               }}
             >
-              <Icon name="check-circle" size={18} color="#fff" style={{ marginRight: 6 }} />
-              <Text style={styles.attendanceButtonText}>Attendance</Text>
+              <Icon name="check-circle" size={16} color="#FFFFFF" />
+              <Text style={styles.markAttendanceButtonText}>Mark Attendance</Text>
             </TouchableOpacity>
           </View>
-          <View style={styles.attendanceStatsRow}>
-            <View style={styles.attendanceStatItem}>
-              <Text style={styles.attendanceStatValue}>{filteredStaff.length}</Text>
-              <Text style={styles.attendanceStatLabel}>Total</Text>
+          
+          {summaryLoading ? (
+            <View style={styles.summaryLoadingContainer}>
+              <Text style={styles.summaryLoadingText}>Loading attendance data...</Text>
             </View>
-            <View style={styles.attendanceStatItem}>
-              <Text style={[styles.attendanceStatValue, { color: '#059669' }]}>
-                {filteredStaff.filter(s => s.status === 'present' || s.status === 'active').length}
-              </Text>
-              <Text style={styles.attendanceStatLabel}>Active</Text>
+          ) : (
+            <View style={styles.attendanceStatsContainer}>
+              <View style={styles.attendanceStatsRow}>
+                <View style={styles.attendanceStatCard}>
+                  <Text style={styles.attendanceStatNumber}>{attendanceSummary.total_staff}</Text>
+                  <Text style={styles.attendanceStatLabel}>Total Staff</Text>
+                </View>
+                <View style={[styles.attendanceStatCard, styles.presentStatCard]}>
+                  <Text style={[styles.attendanceStatNumber, styles.presentStatNumber]}>
+                    {attendanceSummary.present_count}
+                  </Text>
+                  <Text style={styles.attendanceStatLabel}>Present</Text>
+                </View>
+                <View style={[styles.attendanceStatCard, styles.absentStatCard]}>
+                  <Text style={[styles.attendanceStatNumber, styles.absentStatNumber]}>
+                    {attendanceSummary.absent_count}
+                  </Text>
+                  <Text style={styles.attendanceStatLabel}>Absent</Text>
+                </View>
+              </View>
+              
+              {attendanceSummary.not_marked_count > 0 && (
+                <View style={styles.pendingAttendanceContainer}>
+                  <Icon name="pending" size={16} color="#F59E0B" />
+                  <Text style={styles.pendingAttendanceText}>
+                    {attendanceSummary.not_marked_count} staff attendance not marked
+                  </Text>
+                </View>
+              )}
+              
+              {/* <View style={styles.attendanceProgressContainer}>
+                <View style={styles.attendanceProgressBar}>
+                  <View 
+                    style={[
+                      styles.attendanceProgressFill, 
+                      { width: `${attendanceSummary.attendance_percentage}%` }
+                    ]} 
+                  />
+                </View>
+                <Text style={styles.attendanceProgressText}>
+                  {attendanceSummary.attendance_percentage}% attendance marked
+                </Text>
+              </View> */}
             </View>
-            <View style={styles.attendanceStatItem}>
-              <Text style={[styles.attendanceStatValue, { color: '#DC2626' }]}>
-                {filteredStaff.filter(s => s.status === 'absent' || s.status === 'inactive').length}
-              </Text>
-              <Text style={styles.attendanceStatLabel}>Inactive</Text>
-            </View>
-          </View>
+          )}
         </View>
-  
+
         {/* Staff List */}
         <View style={styles.staffList}>
           {filteredStaff.length === 0 ? (
@@ -268,10 +407,10 @@ const StaffScreen = ({ navigation }) => {
           visible={showAddModal}
           onClose={() => setShowAddModal(false)}
           onStaffAdded={handleStaffAdded}
+          userId={userId}
         />
-  
 
-  {/* ...existing code... */}
+        {/* ...existing code... */}
       </ScrollView>
     </SafeAreaView>
   );

@@ -104,6 +104,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#1F2937',
   },
+  noResultsText: {
+    fontSize: 16,
+    color: '#6B7280',
+    textAlign: 'center',
+    marginTop: 12,
+  },
 });
 
 export default styles;

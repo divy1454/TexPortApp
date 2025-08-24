@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
   },
   staffFooter: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     alignItems: 'center',
   },
   staffStatus: {

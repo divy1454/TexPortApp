@@ -192,9 +192,6 @@ const StaffCard = ({ worker, navigation, onStaffDeleted, onStaffUpdated }) => {
       </View>
 
       <View style={styles.staffFooter}>
-        <Text style={styles.staffStatus}>
-          Status: {getStatusIcon(staffData.status)} {staffData.status}
-        </Text>
         <View style={styles.staffActions}>
           <TouchableOpacity
             style={styles.staffActionButton}

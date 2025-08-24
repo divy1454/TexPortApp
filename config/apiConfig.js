@@ -1,17 +1,4 @@
-/**
- * API Configuration
- * Central place to manage all API endpoints
- */
-
 // Base API URL
-export const API = 'http://10.252.242.6:8000/api/';
-
-// // You can also export individual endpoints if needed
-// export const API_ENDPOINTS = {
-//   LOGIN: `${API}login`,
-//   SIGNUP: `${API}signup`,
-//   BUYER: `${API}buyer`,
-//   // Add more endpoints as needed
-// };
+export const API = 'http://10.90.213.6:8000/api/';
 
 export default API;

@@ -1,4 +1,20 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions, Platform } from 'react-native';
+
+const { width: screenWidth } = Dimensions.get('window');
+
+// Responsive breakpoints
+const isSmallScreen = screenWidth < 375;
+const isMediumScreen = screenWidth >= 375 && screenWidth < 768;
+
+// Responsive helper functions
+const responsiveSize = (small, medium, large) => {
+  if (isSmallScreen) return small;
+  if (isMediumScreen) return medium;
+  return large;
+};
+
+const responsivePadding = () => responsiveSize(12, 16, 20);
+const responsiveFontSize = (baseSize) => responsiveSize(baseSize - 2, baseSize, baseSize + 2);
 
 const styles = StyleSheet.create({
   staffCardWrapper: {
@@ -48,11 +64,145 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 16,
   },
-  errorText: {
+  // Attendance Summary Card Styles
+  attendanceSummaryCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: responsiveSize(16, 18, 20),
+    // marginHorizontal: responsivePadding(),
+    marginBottom: responsiveSize(16, 20, 24),
+    padding: responsiveSize(16, 20, 24),
+    ...Platform.select({
+      ios: {
+        shadowColor: '#6366F1',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 4,
+      },
+    }),
+  },
+  attendanceSummaryHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: responsiveSize(16, 20, 24),
+  },
+  attendanceSummaryTitle: {
+    fontSize: responsiveFontSize(18),
+    fontWeight: 'bold',
+    color: '#1F2937',
+    marginBottom: 4,
+  },
+  attendanceSummaryDate: {
+    fontSize: responsiveFontSize(12),
+    color: '#6B7280',
+    fontWeight: '500',
+  },
+  markAttendanceButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#6366F1',
+    borderRadius: responsiveSize(8, 10, 12),
+    paddingHorizontal: responsiveSize(12, 16, 20),
+    paddingVertical: responsiveSize(8, 10, 12),
+    gap: responsiveSize(4, 6, 8),
+  },
+  markAttendanceButtonText: {
+    color: '#FFFFFF',
+    fontSize: responsiveFontSize(12),
+    fontWeight: '600',
+  },
+  summaryLoadingContainer: {
+    paddingVertical: responsiveSize(20, 30, 40),
+    alignItems: 'center',
+  },
+  summaryLoadingText: {
+    color: '#6B7280',
+    fontSize: responsiveFontSize(14),
+    fontStyle: 'italic',
+  },
+  attendanceStatsContainer: {
+    gap: responsiveSize(12, 16, 20),
+  },
+  attendanceStatsRow: {
+    flexDirection: 'row',
+    gap: responsiveSize(8, 12, 16),
+  },
+  attendanceStatCard: {
+    flex: 1,
+    backgroundColor: '#F9FAFB',
+    borderRadius: responsiveSize(12, 14, 16),
+    padding: responsiveSize(12, 16, 20),
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+  },
+  presentStatCard: {
+    backgroundColor: '#F0FDF4',
+    borderColor: '#BBF7D0',
+  },
+  absentStatCard: {
+    backgroundColor: '#FEF2F2',
+    borderColor: '#FECACA',
+  },
+  attendanceStatNumber: {
+    fontSize: responsiveFontSize(20),
+    fontWeight: 'bold',
+    color: '#1F2937',
+    marginBottom: 4,
+  },
+  presentStatNumber: {
+    color: '#059669',
+  },
+  absentStatNumber: {
     color: '#DC2626',
-    fontSize: 14,
+  },
+  attendanceStatLabel: {
+    fontSize: responsiveFontSize(12),
+    color: '#6B7280',
+    fontWeight: '500',
     textAlign: 'center',
   },
+  pendingAttendanceContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFBEB',
+    borderWidth: 1,
+    borderColor: '#FDE68A',
+    borderRadius: responsiveSize(8, 10, 12),
+    padding: responsiveSize(8, 12, 16),
+    gap: responsiveSize(6, 8, 10),
+  },
+  pendingAttendanceText: {
+    fontSize: responsiveFontSize(12),
+    color: '#92400E',
+    fontWeight: '500',
+    flex: 1,
+  },
+  attendanceProgressContainer: {
+    gap: responsiveSize(6, 8, 10),
+  },
+  attendanceProgressBar: {
+    height: responsiveSize(6, 8, 10),
+    backgroundColor: '#E5E7EB',
+    borderRadius: responsiveSize(3, 4, 5),
+    overflow: 'hidden',
+  },
+  attendanceProgressFill: {
+    height: '100%',
+    backgroundColor: '#6366F1',
+    borderRadius: responsiveSize(3, 4, 5),
+  },
+  attendanceProgressText: {
+    fontSize: responsiveFontSize(11),
+    color: '#6B7280',
+    fontWeight: '500',
+    textAlign: 'center',
+  },
+  
+  // Legacy styles (keeping for backward compatibility)  
   searchContainer: {
     position: 'relative',
     marginBottom: 24,
@@ -339,6 +489,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     width: '100%',
     marginTop: 4,
+    gap: 20,
   },
   attendanceStatItem: {
     alignItems: 'center',

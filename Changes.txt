@@ -108,3 +108,10 @@
    - Implemented create, read, update, and delete functionality for staff members
    - Integrated API calls for staff management
    - Added validation and error handling for staff forms
+==========================================================================================================================================
+24-08-2025 - Done by Harsh
+   - Staff Attendance Feature
+   - Developed attendance tracking system for staff members
+   - Created UI components for marking and viewing attendance
+   - Integrated attendance data with backend API
+   - Added summary statistics for attendance overview

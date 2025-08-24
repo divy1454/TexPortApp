@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -15,7 +15,7 @@ import { Picker } from '@react-native-picker/picker';
 import API from '../config/apiConfig';
 import styles from './Css/AddStaffModal.styles';
 
-const AddStaffModal = ({ visible, onClose, onStaffAdded }) => {
+const AddStaffModal = ({ visible, onClose, onStaffAdded, userId }) => {
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -92,7 +92,7 @@ const AddStaffModal = ({ visible, onClose, onStaffAdded }) => {
         body: JSON.stringify({
           ...formData,
           salary_amount: parseFloat(formData.salary_amount),
-          created_by: 1, // Replace with actual user ID from context/auth
+          created_by: userId,
         }),
       });
 
@@ -140,15 +140,6 @@ const AddStaffModal = ({ visible, onClose, onStaffAdded }) => {
             <Icon name="close" size={24} color="#6B7280" />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Add Staff Member</Text>
-          <TouchableOpacity
-            onPress={handleSubmit}
-            disabled={loading}
-            style={[styles.saveButton, loading && styles.saveButtonDisabled]}
-          >
-            <Text style={[styles.saveButtonText, loading && styles.saveButtonTextDisabled]}>
-              {loading ? 'Adding...' : 'Add'}
-            </Text>
-          </TouchableOpacity>
         </View>
 
         <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>

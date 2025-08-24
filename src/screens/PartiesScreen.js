@@ -93,19 +93,19 @@ const PartiesScreen = ({ navigation }) => {
 
       if (data.success) {
         setParties(data.parties);
-        console.log('Parties loaded successfully:', data.parties.length, 'parties');
+        // console.log('Parties loaded successfully:', data.parties.length, 'parties');
       } else {
         setError(data.message || 'Failed to fetch parties');
         // Use static data as fallback
-        setParties(staticParties);
-        console.log('API failed, using static data');
+        // setParties(staticParties);
+        // console.log('API failed, using static data');
       }
     } catch (err) {
       console.error('Error fetching parties:', err);
       setError('Network error occurred');
       // Use static data as fallback
-      setParties(staticParties);
-      console.log('Network error, using static data');
+      // setParties(staticParties);
+      // console.log('Network error, using static data');
     } finally {
       setLoading(false);
     }
@@ -114,23 +114,23 @@ const PartiesScreen = ({ navigation }) => {
   // Load parties on component mount
   useEffect(() => {
     const initializeScreen = async () => {
-      console.log('Initializing PartiesScreen, demoMode:', demoMode);
+      // console.log('Initializing PartiesScreen, demoMode:', demoMode);
       
       if (!demoMode) {
         const user = await getCurrentUser();
-        console.log('Current user:', user);
+        // console.log('Current user:', user);
         
         if (user && user.id) {
-          console.log('Fetching parties for user ID:', user.id);
+          // console.log('Fetching parties for user ID:', user.id);
           fetchPartiesByCreator(user.id);
         } else {
-          console.log('No user found, using static data');
+          // console.log('No user found, using static data');
           setError('User not found. Please login again.');
-          setParties(staticParties);
+          // setParties(staticParties);
         }
       } else {
-        console.log('Demo mode, using static data');
-        setParties(staticParties);
+        // console.log('Demo mode, using static data');
+        // setParties(staticParties);
       }
     };
 
@@ -224,9 +224,13 @@ const PartiesScreen = ({ navigation }) => {
 
         {/* Party List */}
         <View style={styles.partyList}>
-          {filteredParties.map(party => (
-            <PartyCard key={party.id} party={party} navigation={navigation} />
-          ))}
+          {filteredParties.length === 0 ? (
+            <Text style={styles.noResultsText}>No parties found.</Text>
+          ) : (
+            filteredParties.map(party => (
+              <PartyCard key={party.id} party={party} navigation={navigation} />
+            ))
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
