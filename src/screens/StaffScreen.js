@@ -380,14 +380,14 @@ const StaffScreen = ({ navigation }) => {
           {filteredStaff.length === 0 ? (
             <View style={styles.emptyListContainer}>
               <Icon name="people-outline" size={64} color="#9CA3AF" />
-              <Text style={styles.emptyListText}>
-                {demoMode ? 'Demo staff data shown above' : 'No staff found.'}
+              <Text style={styles.emptyListText}>No Staff Available</Text>
+              <Text style={styles.emptyListSubtext}>
+                {searchText
+                  ? 'No staff found matching your search'
+                  : demoMode 
+                    ? 'Demo staff data shown above' 
+                    : 'Start by adding your first staff member'}
               </Text>
-              {searchText.length > 0 && (
-                <Text style={styles.emptyListSubtext}>
-                  Try adjusting your search terms
-                </Text>
-              )}
             </View>
           ) : (
             filteredStaff.map(worker => (

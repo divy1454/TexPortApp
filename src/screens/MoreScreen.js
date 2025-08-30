@@ -97,9 +97,9 @@ const MoreScreen = ({ navigation }) => {
           />
           <ToolCard 
             icon="🧮" 
-            title="Calculator" 
-            subtitle="Quick Math" 
-            onPress={() => demoMode && showDemoAlert()}
+            title="Product" 
+            subtitle="Product Manage" 
+            onPress={() => handleNavigateWithDemoCheck('ProductManage')}
           />
           <ToolCard 
             icon="📈" 

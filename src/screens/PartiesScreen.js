@@ -225,7 +225,15 @@ const PartiesScreen = ({ navigation }) => {
         {/* Party List */}
         <View style={styles.partyList}>
           {filteredParties.length === 0 ? (
-            <Text style={styles.noResultsText}>No parties found.</Text>
+            <View style={styles.noPartyContainer}>
+                          <Icon name="group" size={64} color="#9CA3AF" />
+                          <Text style={styles.noPartyText}>No Parties Available</Text>
+                          <Text style={styles.noPartySubText}>
+                            {searchText
+                              ? 'No parties found matching your search'
+                              : 'Start by adding your first party'}
+                          </Text>
+                        </View>
           ) : (
             filteredParties.map(party => (
               <PartyCard key={party.id} party={party} navigation={navigation} />

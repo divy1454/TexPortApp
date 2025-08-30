@@ -23,7 +23,9 @@ import DuePaymentsScreen from './src/screens/payments/due-payments-screen';
 import AddPartyScreen from './src/screens/parties/add-party-screen';
 import EditPartyScreen from './src/screens/parties/edit-party-screen';
 import BillSortingScreen from './src/screens/yarn/bill-sorting-screen';
-import TransporterBookingScreen from './src/screens/yarn/transporter-booking-screen';
+import ProductManageScreen from './src/screens/product/product-manage-screen';
+import AddProductScreen from './src/screens/product/add-product-screen';
+import EditProductScreen from './src/screens/product/edit-product-screen';
 // import AttendanceScreen from './src/screens/staff/attendance-screen';
 import StaffAttendanceScreen from './src/screens/staff/StaffAttendanceScreen';
 
@@ -117,25 +119,25 @@ const App = () => (
           options={{ presentation: 'modal' }}
         />
         <Stack.Screen 
-          name="TransporterBooking" 
-          component={TransporterBookingScreen}
+          name="ProductManage" 
+          component={ProductManageScreen}
           options={{ presentation: 'modal' }}
         />
-        {/* <Stack.Screen 
-          name="Attendance" 
-          component={AttendanceScreen}
+        <Stack.Screen 
+          name="AddProduct" 
+          component={AddProductScreen}
           options={{ presentation: 'modal' }}
-        /> */}
+        />
+        <Stack.Screen 
+          name="EditProduct" 
+          component={EditProductScreen}
+          options={{ presentation: 'modal' }}
+        />
         <Stack.Screen 
           name="StaffAttendance" 
           component={StaffAttendanceScreen}
           options={{ presentation: 'modal' }}
         />
-        {/* <Stack.Screen 
-          name="AddStaff" 
-          component={AddStaffScreen}
-          options={{ presentation: 'modal' }}
-        /> */}
         <Stack.Screen 
           name="EditStaff" 
           component={EditStaffScreen}

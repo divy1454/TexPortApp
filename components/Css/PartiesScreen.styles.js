@@ -110,6 +110,27 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 12,
   },
+  noPartyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 60,
+    paddingHorizontal: 20,
+  },
+  noPartyText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#6B7280',
+    marginTop: 16,
+    textAlign: 'center',
+  },
+  noPartySubText: {
+    fontSize: 14,
+    color: '#9CA3AF',
+    marginTop: 8,
+    textAlign: 'center',
+    lineHeight: 20,
+  },
 });
 
 export default styles;
