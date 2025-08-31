@@ -115,3 +115,9 @@
    - Created UI components for marking and viewing attendance
    - Integrated attendance data with backend API
    - Added summary statistics for attendance overview
+==========================================================================================================================================
+31-08-2025 - Done by Harsh
+   - Product CRUD Completed (Add, Edit, Delete, View)
+   - Order CRUD Completed (Add, Edit, Delete, View)
+   - Home Screen Completed (Show total Parties and total due payments)
+   - Payments Screen Completed (Total parties and total payments with 2 buttons for "mark as paid" and "reminder", (without actual functionality of reminder button))

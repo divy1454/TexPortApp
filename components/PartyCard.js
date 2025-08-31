@@ -67,7 +67,7 @@ const PartyCard = ({ party, navigation }) => {
               }
             },
           },
-        ]
+        ],
       );
     }
   };
@@ -89,10 +89,10 @@ const PartyCard = ({ party, navigation }) => {
               {getStatusIcon(partyData.status)} {partyData.status}
             </Text>
           </View> */}
-          <Text style={styles.partyOutstanding}>
+          {/* <Text style={styles.partyOutstanding}>
             ₹{partyData.outstanding.toLocaleString()}
           </Text>
-          <Text style={styles.partyOutstandingLabel}>Outstanding</Text>
+          <Text style={styles.partyOutstandingLabel}>Outstanding</Text> */}
         </View>
       </View>
       <View style={styles.partyFooter}>

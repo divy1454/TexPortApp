@@ -36,19 +36,21 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
     borderRadius: 20,
-    marginBottom: 8,
+    marginTop: 4,
+    alignSelf: 'flex-end',
   },
   statusBadgeText: {
     fontSize: 12,
     fontWeight: '600',
+    textAlign: 'center',
   },
   partyOutstanding: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#EF4444',
+    // color: '#EF4444',
   },
   partyOutstandingLabel: {
     fontSize: 12,

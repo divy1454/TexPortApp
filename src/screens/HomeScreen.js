@@ -1,15 +1,92 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView, SafeAreaView, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, SafeAreaView, Alert, ActivityIndicator, RefreshControl } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Header from '../../components/Header';
 import DemoBanner from '../../components/DemoBanner';
 import { useDemoMode } from '../context/DemoContext';
 import { demoDashboard } from '../data/demoDashboard';
+import { API } from '../../config/apiConfig';
 import styles from '../../components/Css/HomeScreen.styles';
 
 const HomeScreen = ({ navigation }) => {
   const { demoMode, showDemoAlert } = useDemoMode();
+
+  // Dashboard state
+  const [dashboardData, setDashboardData] = useState({
+    totalParties: 0,
+    totalUnpaidAmount: 0,
+    latestUnpaidParties: []
+  });
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
+
+  // Fetch dashboard data from API
+  const fetchDashboardData = async (isRefreshing = false) => {
+    if (demoMode) {
+      setIsLoading(false);
+      setRefreshing(false);
+      return;
+    }
+
+    try {
+      if (!isRefreshing) {
+        setIsLoading(true);
+      }
+      setError(null);
+
+      // Get user ID from AsyncStorage
+      const userString = await AsyncStorage.getItem('user');
+      if (!userString) {
+        throw new Error('User not found');
+      }
+
+      const user = JSON.parse(userString);
+      const userId = user.id;
+
+      // Fetch dashboard data
+      const response = await fetch(`${API}app-dashboard`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          created_by: userId
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setDashboardData({
+        totalParties: data.total_parties,
+        totalUnpaidAmount: data.total_unpaid_amount,
+        latestUnpaidParties: data.latest_unpaid_parties
+      });
+
+    } catch (err) {
+      console.error('Error fetching dashboard data:', err);
+      setError('Error fetching dashboard data');
+    } finally {
+      setIsLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  // Handle pull to refresh
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchDashboardData(true);
+  };
+
+  // Fetch dashboard data from API
+  useEffect(() => {
+    fetchDashboardData();
+  }, [demoMode]);
 
   // Sample data for parties with payment details (production data)
   const partiesReceivablePayments = [
@@ -92,7 +169,7 @@ const HomeScreen = ({ navigation }) => {
   const currentReceivablePayments = demoMode ? demoDashboard.receivablePayments : partiesReceivablePayments;
   const currentGivablePayments = demoMode ? demoDashboard.givablePayments : partiesGivablePayments;
 
-  // Calculate totals
+  // Calculate totals - use dashboard data for production or demo data
   const totalReceivable = demoMode ? demoDashboard.totalReceivablePayment : partiesReceivablePayments.reduce((sum, party) => {
     const amount = parseInt(party.amount.replace(/[₹,]/g, ''));
     return sum + amount;
@@ -103,7 +180,9 @@ const HomeScreen = ({ navigation }) => {
     return sum + amount;
   }, 0);
 
-  const totalParties = demoMode ? demoDashboard.totalParties : [...partiesReceivablePayments, ...partiesGivablePayments].length;
+  // Use dashboard data for production mode
+  const displayTotalParties = demoMode ? demoDashboard.totalParties : dashboardData.totalParties;
+  const displayTotalUnpaid = demoMode ? demoDashboard.totalReceivablePayment : dashboardData.totalUnpaidAmount;
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -163,61 +242,153 @@ const HomeScreen = ({ navigation }) => {
     </View>
   );
 
+  const renderUnpaidPartiesTable = () => (
+    <View style={styles.tableContainer}>
+      <View style={styles.tableHeader}>
+        <Text style={styles.tableTitle}>💸 Latest Unpaid Parties</Text>
+      </View>
+      <View style={styles.table}>
+        <View style={styles.tableHeaderRow}>
+          <Text style={styles.tableHeaderText}>Party Name</Text>
+          <Text style={styles.tableHeaderText}>Unpaid Amount</Text>
+        </View>
+        {dashboardData.latestUnpaidParties.length > 0 ? (
+          dashboardData.latestUnpaidParties.map((party, index) => (
+            <View key={party.id} style={[styles.tableRow, index % 2 === 0 && styles.evenRow]}>
+              <Text style={styles.partyName} numberOfLines={1}>{party.name}</Text>
+              <Text style={[styles.amount, { color: '#EF4444' }]}>
+                ₹{party.unpaid_amount}
+              </Text>
+            </View>
+          ))
+        ) : (
+          <View style={styles.tableRow}>
+            <Text style={[styles.partyName, { textAlign: 'center', color: '#6B7280' }]}>
+              No unpaid parties
+            </Text>
+          </View>
+        )}
+      </View>
+    </View>
+  );
+
   return (
     <SafeAreaView style={styles.container}>
       <Header navigation={navigation} />
       <DemoBanner navigation={navigation} />
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+
+      {/* Loading State */}
+      {isLoading && !demoMode && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#6366F1" />
+          <Text style={styles.loadingText}>Loading dashboard...</Text>
+        </View>
+      )}
+
+      {/* Error State */}
+      {error && !demoMode && (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{error}</Text>
+          <TouchableOpacity
+            style={styles.retryButton}
+            onPress={() => {
+              setError(null);
+              fetchDashboardData();
+            }}
+          >
+            <Text style={styles.retryButtonText}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      <ScrollView 
+        style={styles.content} 
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={['#6366F1']} // Android
+            tintColor="#6366F1" // iOS
+          />
+        }
+      >
         {/* Welcome Section */}
-        <LinearGradient colors={['#6366F1', '#8B5CF6']} style={styles.welcomeCard}>
+        <LinearGradient
+          colors={['#6366F1', '#8B5CF6']}
+          style={styles.welcomeCard}
+        >
           <View style={styles.welcomeContent}>
             <Text style={styles.welcomeTitle}>Welcome to TexPort! 🏠</Text>
-            <Text style={styles.welcomeSubtitle}>Your complete textile business dashboard</Text>
+            <Text style={styles.welcomeSubtitle}>
+              Your complete textile business dashboard
+            </Text>
           </View>
           <Text style={styles.welcomeIcon}>🏭</Text>
         </LinearGradient>
 
-        {/* Summary Stats */}
+        {/* Dashboard Summary Stats */}
         <View style={styles.summaryContainer}>
           <View style={styles.summaryCard}>
-            <Text style={styles.summaryValue}>{totalParties}</Text>
+            <Text style={styles.summaryValue}>{displayTotalParties}</Text>
             <Text style={styles.summaryLabel}>Total Parties</Text>
             <Icon name="people" size={24} color="#6366F1" />
           </View>
           <View style={styles.summaryCard}>
-            <Text style={styles.summaryValue}>₹{(totalReceivable / 100000).toFixed(1)}L</Text>
-            <Text style={styles.summaryLabel}>Receivable</Text>
-            <Icon name="trending-up" size={24} color="#10B981" />
+            <Text style={styles.summaryValue}>₹{displayTotalUnpaid}</Text>
+            <Text style={styles.summaryLabel}>Total Unpaid</Text>
+            <Icon name="paid" size={24} color="#EF4444" />
           </View>
-          <View style={styles.summaryCard}>
+          {/* <View style={styles.summaryCard}>
             <Text style={styles.summaryValue}>₹{(totalGivable / 100000).toFixed(1)}L</Text>
             <Text style={styles.summaryLabel}>Payable</Text>
             <Icon name="trending-down" size={24} color="#EF4444" />
-          </View>
+          </View> */}
         </View>
 
-        {/* Payment Tables */}
-        {renderPartyTable('Parties to Receive Payment From', currentReceivablePayments, '💰')}
-        {renderPartyTable('Parties to Give Payment To', currentGivablePayments, '💸')}
+        {/* Dashboard Tables - Show API data for production, demo data for demo mode */}
+        {!demoMode && !isLoading && !error && renderUnpaidPartiesTable()}
+
+        {/* Demo Mode Tables */}
+        {demoMode && (
+          <>
+            {renderPartyTable(
+              'Parties to Receive Payment From',
+              currentReceivablePayments,
+              '💰',
+            )}
+            {renderPartyTable(
+              'Parties to Give Payment To',
+              currentGivablePayments,
+              '💸',
+            )}
+          </>
+        )}
 
         {/* Quick Actions */}
         <View style={styles.quickActionsContainer}>
           <Text style={styles.sectionTitle}>⚡ Quick Actions</Text>
           <View style={styles.actionsGrid}>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.actionCard}
               onPress={() => navigation.navigate('Parties')}
             >
-              <LinearGradient colors={['#10B981', '#059669']} style={styles.actionGradient}>
+              <LinearGradient
+                colors={['#10B981', '#059669']}
+                style={styles.actionGradient}
+              >
                 <Icon name="people" size={32} color="white" />
                 <Text style={styles.actionTitle}>All Parties</Text>
               </LinearGradient>
             </TouchableOpacity>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.actionCard}
               onPress={() => navigation.navigate('Payments')}
             >
-              <LinearGradient colors={['#6366F1', '#8B5CF6']} style={styles.actionGradient}>
+              <LinearGradient
+                colors={['#6366F1', '#8B5CF6']}
+                style={styles.actionGradient}
+              >
                 <Icon name="payment" size={32} color="white" />
                 <Text style={styles.actionTitle}>Payments</Text>
               </LinearGradient>

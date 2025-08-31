@@ -168,6 +168,61 @@ const styles = StyleSheet.create({
   micIcon: {
     fontSize: 32,
   },
+  unpaidPartyCard: {
+    backgroundColor: 'white',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  unpaidPartyInfo: {
+    flex: 1,
+  },
+  unpaidPartyName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1F2937',
+    marginBottom: 4,
+  },
+  unpaidAmount: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#EF4444',
+  },
+  unpaidPartyActions: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  actionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+    gap: 4,
+  },
+  reminderButton: {
+    backgroundColor: '#F59E0B',
+  },
+  paidButton: {
+    backgroundColor: '#10B981',
+  },
+  actionButtonText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  unpaidPartyId: {
+    fontSize: 12,
+    color: '#6B7280',
+  },
 });
 
 export default styles;
